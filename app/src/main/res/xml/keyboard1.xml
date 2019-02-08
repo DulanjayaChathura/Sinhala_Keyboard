@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
+    android:keyWidth="10%p"
+    android:horizontalGap="3px"
+    android:verticalGap="3px"
+    android:keyHeight="40dp"
+    android:keyTextColor="@color/colorAccent"
+    android:keyBackground="@color/colorPrimaryDark"
+    >
+
+    <Row>
+        <Key android:codes="3540" android:keyLabel="ු" android:keyEdgeFlags="left"/>
+        <Key android:codes="3461" android:keyLabel="අ"/>
+        <Key android:codes="3536" android:keyLabel="ැ"/>
+        <Key android:codes="3515" android:keyLabel="ර"/>
+        <Key android:codes="3509" android:keyLabel="ඵ"/>
+        <Key android:codes="3524" android:keyLabel="හ"/>
+        <Key android:codes="3512" android:keyLabel="ම"/>
+        <Key android:codes="3523" android:keyLabel="ස"/>
+        <Key android:codes="3503" android:keyLabel="෫"/>
+        <Key android:codes="3488" android:keyLabel="ච" android:keyEdgeFlags="right"/>
+    </Row>
+    <Row>
+        <Key android:codes="3530" android:keyLabel="්" android:keyEdgeFlags="left"/>
+        <Key android:codes="3538" android:keyLabel="ි"/>
+        <Key android:codes="3535" android:keyLabel="ා"/>
+        <Key android:codes="3545" android:keyLabel="ෙ"/>
+        <Key android:codes="3495" android:keyLabel="ට"/>
+        <Key android:codes="3514" android:keyLabel="ය"/>
+        <Key android:codes="3520" android:keyLabel="ව"/>
+        <Key android:codes="3505" android:keyLabel="න"/>
+        <Key android:codes="3482" android:keyLabel="ක"/>
+        <Key android:codes="3501" android:keyLabel="ත" android:keyEdgeFlags="right"/>
+    </Row>
+    <Row>
+
+        <Key android:codes="3458" android:keyLabel="ං" android:keyEdgeFlags="left"/>
+        <Key android:codes="3490" android:keyLabel="ජ"/>
+        <Key android:codes="3497" android:keyLabel="ඩ"/>
+        <Key android:codes="3465" android:keyLabel="ඉ"/>
+        <Key android:codes="3510" android:keyLabel="බ"/>
+        <Key android:codes="3508" android:keyLabel="ප"/>
+        <Key android:codes="3517" android:keyLabel="ල"/>
+        <Key android:codes="3484" android:keyLabel="ග"/>
+        <Key android:codes="-5" android:keyIcon="@drawable/ic_backspace" android:keyWidth="20%p" android:isRepeatable="true" android:keyEdgeFlags="right"/>
+    </Row>
+    <Row android:rowEdgeFlags="bottom">
+        <Key android:codes="-1" android:keyIcon="@drawable/ic_keyboard_capslock" android:keyWidth="15%p" android:keyEdgeFlags="left" />
+        <Key android:codes="44" android:keyLabel="\?123" android:keyWidth="20%p" />
+
+        <Key android:codes="32" android:keyIcon="@drawable/ic_space_bar" android:keyWidth="45%p" android:isRepeatable="true"/>
+        <Key android:codes="-4" android:keyBackground="@color/colorPrimary" android:keyIcon="@drawable/ic_keyboard_enter" android:keyWidth="20%p" android:keyEdgeFlags="right"/>
+    </Row>
+</Keyboard>
