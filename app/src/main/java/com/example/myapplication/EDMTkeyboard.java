@@ -13,8 +13,11 @@ public class EDMTkeyboard extends InputMethodService implements KeyboardView.OnK
 
     private KeyboardView inputView;
     private Keyboard sinhalaKeyboard;//keyboard1 when caps off
-
+    private Keyboard symbolKeyboard;// symbol keyboard
+    private Keyboard symbolShiftKeyboard; //symbol shift keyboard
     private Keyboard sinhalaKeyboardShift; //keyboard1 when caps on
+    private String  type="language";// to keep a track of type whether it is symbol or language
+    private boolean isCap=false;
 
    // public static String activeKeyboard;
     //private Keyboard curKeyboard;
@@ -25,6 +28,8 @@ public class EDMTkeyboard extends InputMethodService implements KeyboardView.OnK
     public void onInitializeInterface(){
         sinhalaKeyboard=new Keyboard(this,R.xml.keyboard1);
         sinhalaKeyboardShift=new Keyboard(this,R.xml.keyboard2);
+        symbolKeyboard=new Keyboard(this,R.xml.simbol);
+        symbolShiftKeyboard=new Keyboard(this,R.xml.simbolshift);
         //making new keyboard1
     }
 
@@ -68,6 +73,10 @@ public class EDMTkeyboard extends InputMethodService implements KeyboardView.OnK
                 inputView.invalidateAllKeys();//Requests a redraw of the entire keyboard1.
                 handleShift();
                 break;
+            case Keyboard.KEYCODE_MODE_CHANGE:
+                inputView.invalidateAllKeys();
+                switchTo();
+                break;
             case Keyboard.KEYCODE_DONE:
                 ic.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
                 //KeyEvent(int action, int code(relevant code))
@@ -83,17 +92,62 @@ public class EDMTkeyboard extends InputMethodService implements KeyboardView.OnK
 
 
         Keyboard currentKeyboard=inputView.getKeyboard();
-        if (currentKeyboard==sinhalaKeyboard){
-            sinhalaKeyboard.setShifted(true);
-            inputView.setKeyboard(sinhalaKeyboardShift);
-        }else{
-            sinhalaKeyboardShift.setShifted(true);
-            inputView.setKeyboard(sinhalaKeyboard);
+       if(type.equals("language")){
+            if (currentKeyboard==sinhalaKeyboard){
+
+                sinhalaKeyboard.setShifted(true);
+                sinhalaKeyboardShift.setShifted(false);
+                inputView.setKeyboard(sinhalaKeyboardShift);
+                isCap=true;
+            }else{
+                sinhalaKeyboardShift.setShifted(true);
+                sinhalaKeyboard.setShifted(false);
+                inputView.setKeyboard(sinhalaKeyboard);
+                isCap=false;
+            }
         }
+
+        else if(type.equals("symbol")){
+            if (currentKeyboard==symbolKeyboard){
+                symbolKeyboard.setShifted(true);
+                symbolShiftKeyboard.setShifted(false);
+                inputView.setKeyboard(symbolShiftKeyboard);
+                isCap=true;
+            }else{
+                symbolShiftKeyboard.setShifted(true);
+                symbolKeyboard.setShifted(false);
+                inputView.setKeyboard(symbolKeyboard);
+                isCap=false;
+
+
+        }
+      }
+    }
+        /**
+         * this method change the type of the keyboard **/
+
+
+    private void switchTo(){
+       if(type.equals("language")) {
+           type="symbol";
+           if (!isCap) {
+               inputView.setKeyboard(symbolKeyboard);
+           } else {
+               inputView.setKeyboard(symbolShiftKeyboard);
+           }
+       }else{
+           type="language";
+           if (!isCap) {
+               inputView.setKeyboard(sinhalaKeyboard);
+           } else {
+               inputView.setKeyboard(sinhalaKeyboardShift);
+           }
+       }
     }
 
+
     /**
-     * Switch to language when it is changed from Choose Input Method.
+     * Switch to symbols when it is changed from Choose Input Method.
 
     @Override
     public void onCurrentInputMethodSubtypeChanged(InputMethodSubtype subtype) {
