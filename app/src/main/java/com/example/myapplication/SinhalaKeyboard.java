@@ -4,14 +4,16 @@ import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodSubtype;
 
 
-public class EDMTkeyboard extends InputMethodService implements KeyboardView.OnKeyboardActionListener{
+public class SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardActionListener{
 
     private KeyboardView inputView;
+    private Candidate_view candidateView;
     private Keyboard sinhalaKeyboard;//keyboard1 when caps off
     private Keyboard symbolKeyboard;// symbol keyboard
     private Keyboard symbolShiftKeyboard; //symbol shift keyboard
@@ -57,7 +59,18 @@ public class EDMTkeyboard extends InputMethodService implements KeyboardView.OnK
     public void onRelease(int primaryCode){
     //Called when the user releases a key.
     }
+    /**
+     * Called by the framework when your view for showing candidates needs to
+     * be generated, like {@link #onCreateInputView}.
 
+    @Override
+    public View onCreateCandidatesView() {
+        candidateView=(Candidate_view)getLayoutInflater().inflate(R.layout.candidate_view,null);
+
+        candidateView.setService(this);
+        return candidateView;
+    }
+     */
     @Override
     public void onKey(int primaryCode, int[] keyCodes) {
     //send a key press to listener
