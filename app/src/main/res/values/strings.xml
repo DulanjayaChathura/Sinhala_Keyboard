@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">My Application</string>
+    <string name="ime_name">Stroke5 Keyboard</string>
+    <string name="database_version">1</string>
+    <string name="result_max">5</string>
+    <string name="candidates_bottom_weight">3</string>
+    <string name="pref_about">About</string>
+    <string name="ime_version">0.1</string>
+
+    <!-- Symbols that are commonly considered word separators in this language -->
+    <string name="non_characters">"0123456789 `,./?;:''[[]]`~!@#$%^\n*()-_+=|/*-\n"</string>
 </resources>

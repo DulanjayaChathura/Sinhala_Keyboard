@@ -7,6 +7,7 @@
     android:keyHeight="40dp"
     android:keyTextColor="@color/colorAccent"
     android:keyBackground="@color/colorPrimaryDark"
+    android:id="@+id/sinhalaKeyboard"
     >
 
     <Row>
