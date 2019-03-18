@@ -8,7 +8,7 @@
     <color name="keyboard_pressed">#95a5a6</color>
 
     <color name="candidate_normal">#ffffffff</color>
-    <color name="candidate_recommended">#FFE35900</color>
+    <color name="candidate_recommended">#ffffffff</color>
     <color name="candidate_other">#ff808080</color>
     <color name="candidate_background">#4D5656</color>
 
