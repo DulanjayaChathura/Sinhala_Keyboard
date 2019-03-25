@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,7 +33,7 @@ public class Candidate_view extends View {
 
     private int[] mWordWidth = new int[MAX_SUGGESTIONS];
     private int[] mWordX = new int[MAX_SUGGESTIONS];
-    private static final int X_GAP = 10;
+    private static final int X_GAP = 20;
 
     private static final List<String> EMPTY_LIST = new ArrayList<String>();
     private int mColorNormal;
@@ -55,16 +56,16 @@ public class Candidate_view extends View {
      */
     public Candidate_view(Context context) {
         super(context);
-
-        mSelectionHighlight = context.getResources().getDrawable(
+        Resources r = context.getResources();
+        mSelectionHighlight = r.getDrawable(
                 android.R.drawable.list_selector_background);
-        mSelectionHighlight.setState(new int[]{
+        mSelectionHighlight.setState(new int[]{  // set the states for the selectionHighlight
                 android.R.attr.state_enabled,
                 android.R.attr.state_focused,
                 android.R.attr.state_window_focused,
                 android.R.attr.state_pressed
         });
-        Resources r = context.getResources();
+
 
         setBackgroundColor(r.getColor(R.color.candidate_background));
 
@@ -79,10 +80,11 @@ public class Candidate_view extends View {
         mPaint.setTextSize(r.getDimensionPixelSize(R.dimen.candidate_font_height));
         mPaint.setStrokeWidth(0);
 
-        mGestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
+        mGestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2,
                                     float distanceX, float distanceY) {
+         //     System.out.println("GestureDetector is ok");
                 mScrolled = true;
                 int sx = getScrollX();
                 sx += distanceX;
@@ -117,7 +119,7 @@ public class Candidate_view extends View {
     public int computeHorizontalScrollRange() {
         return mTotalWidth;
     }
-
+// handle the draw layout
    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int measuredWidth = resolveSize(50, widthMeasureSpec);
@@ -125,7 +127,7 @@ public class Candidate_view extends View {
         // Get the desired height of the icon menu view (last row of items does
         // not have a divider below)
         Rect padding = new Rect();
-        mSelectionHighlight.getPadding(padding);
+    //    mSelectionHighlight.getPadding(padding);
         final int desiredHeight = ((int) mPaint.getTextSize()) + mVerticalPadding
                 + padding.top + padding.bottom + extraHeight;
 
@@ -139,7 +141,7 @@ public class Candidate_view extends View {
      * candidate.
      */
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(Canvas canvas) {// draw the text and the lines
         if (canvas != null) {
             super.onDraw(canvas);
         }
@@ -149,7 +151,7 @@ public class Candidate_view extends View {
         if (mBgPadding == null) {
             mBgPadding = new Rect(0, 0, 0, 0);
             if (getBackground() != null) {
-                getBackground().getPadding(mBgPadding);
+                getBackground().getPadding(mBgPadding);// get the rectangle
             }
         }
         int x = 0;
@@ -157,11 +159,12 @@ public class Candidate_view extends View {
         final int height = getHeight();
         final Rect bgPadding = mBgPadding;
         final Paint paint = mPaint;
-        final int touchX = mTouchX;
-        final int scrollX = getScrollX();
+        final int touchX = mTouchX;// For a touch screen, reports the absolute X screen position of the center of the touch contact area, unit is pixel
+        final int scrollX = getScrollX();//	The left edge of the displayed part of your view, in pixels. -- this returns final int
         final boolean scrolled = mScrolled;
         final boolean typedWordValid = mTypedWordValid;
         final int y = (int) (((height - mPaint.getTextSize()) / 2) - mPaint.ascent());
+      //  System.out.println("scrolled : "+mScrolled);
         for (int i = 0; i < count; i++) {
             // Break the loop. This fix the app from crashing.
             if(i >= MAX_SUGGESTIONS){
@@ -170,14 +173,17 @@ public class Candidate_view extends View {
             String suggestion = mSuggestions.get(i);// size of the suggetion list
             float textWidth = paint.measureText(suggestion);
             final int wordWidth = (int) textWidth + X_GAP * 2;
-            mWordX[i] = x;
-            mWordWidth[i] = wordWidth;
+     //       mWordX[i] = x;// count the sum of the length (word1+ word2) 200 line
+            mWordWidth[i] = wordWidth;// entire word i width
             paint.setColor(mColorNormal);
             if (touchX + scrollX >= x && touchX + scrollX < x + wordWidth && !scrolled) {
+                System.out.println("Scrolled lsength :" +scrollX);
+                System.out.println("touchX :" +touchX);
+                System.out.println("scrolled :" +scrolled);
                 if (canvas != null) {
-                    canvas.translate(x, 0);
-                    mSelectionHighlight.setBounds(0, bgPadding.top, wordWidth, height);
-                    mSelectionHighlight.draw(canvas);
+                   canvas.translate(x, 0);
+                   mSelectionHighlight.setBounds(0, bgPadding.top, wordWidth, height);
+                   mSelectionHighlight.draw(canvas);
                     canvas.translate(-x, 0);
                 }
                 mSelectedIndex = i;
@@ -192,8 +198,9 @@ public class Candidate_view extends View {
 
                 canvas.drawText(suggestion, x + X_GAP, y, paint);
                 paint.setColor(mColorOther);
-                canvas.drawLine(x + wordWidth + 0.5f, bgPadding.top,
-                        x + wordWidth + 0.5f, height + 1, paint);
+                    // draw the horizontal lines
+                canvas.drawLine(x + wordWidth + .5f, bgPadding.top,
+                        x + wordWidth + .5f, height + 1, paint);
                 paint.setFakeBoldText(false);
             }
             x += wordWidth;
@@ -248,16 +255,31 @@ public class Candidate_view extends View {
     @Override
     public boolean onTouchEvent(MotionEvent me) {
 
+
+        //true if the OnGestureListener consumed the event, else false.
+        //listen for a subset it might be easier to extend SimpleOnGestureListener.
         if (mGestureDetector.onTouchEvent(me)) {
             return true;
         }
+       // System.out.println("touch is working");
 
         int action = me.getAction();
         int x = (int) me.getX();
         int y = (int) me.getY();
-        mTouchX = x;
+        mTouchX = x;// x coordinate of the event
+     //   System.out.println("value of x :"+x);
+    //    Log.d("width of the one words :" ," ");
+    //    for(int i=0;i<mWordWidth.length;i++){
+     //       System.out.println(mWordWidth[i]);
+    //    }
 
-        switch (action) {
+//        System.out.println("width of the sum of the words :" );
+//        for(int i=0;i<mWordX.length;i++){
+//            System.out.println(mWordX[i]);
+//        }
+ //       System.out.println("--------------------------------------------------");
+
+            switch (action) {
             case MotionEvent.ACTION_DOWN:
                 mScrolled = false;
                 invalidate();
@@ -265,18 +287,20 @@ public class Candidate_view extends View {
             case MotionEvent.ACTION_MOVE:
                 if (y <= 0) {
                     // Fling up!?
-//                    if (mSelectedIndex >= 0) {
-//                        mService.pickSuggestionManually(mSelectedIndex);
-//                        mSelectedIndex = -1;
-//                    }
+                    if (mSelectedIndex >= 0) {//we need to take the index of touched word
+                     //   System.out.println("Index : "+mSelectedIndex);
+                        mService.pickSuggestionManually(mSelectedIndex);
+
+                        mSelectedIndex = -1;
+                    }
                 }
                 invalidate();
                 break;
             case MotionEvent.ACTION_UP:
                 if (!mScrolled) {
-//                    if (mSelectedIndex >= 0) {
-//                        mService.pickSuggestionManually(mSelectedIndex);
-//                    }
+                    if (mSelectedIndex >= 0) {
+                        mService.pickSuggestionManually(mSelectedIndex);
+                    }
                 }
                 mSelectedIndex = -1;
                 removeHighlight();

@@ -4,6 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark"
-    tools:text="@tools:sample/date/day_of_week">
+    tools:text="#ffffffffffff">
 
 </TextView>
