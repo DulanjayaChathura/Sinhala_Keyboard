@@ -40,7 +40,7 @@ public class Dictionary {
        // Log.d("message","status :"+"insertOk");
         for (int i = 0; i < k.length(); i++) {
             String key = k.substring(0,i+1);
-           // Log.d("word",": " +k );
+            Log.d("word",": " +k );
             if(key.equals(" ")){
                 continue;
             }

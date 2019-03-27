@@ -445,9 +445,15 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
 //                mComposing.append(typedWord);// add the word
 //            }
 
+
+
             updateCandidates();
 
         }
+        if (typedWord.length() == 0) {
+            setCandidatesViewShown(false);
+        }
+
       //  System.out.println("Typedword :"+typedWord);
       //  System.out.println("composing :"+mComposing.toString());
     }

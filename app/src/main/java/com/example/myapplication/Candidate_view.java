@@ -99,6 +99,14 @@ public class Candidate_view extends View {
                 invalidate();
                 return true;
             }
+            @Override
+            public  void onLongPress (MotionEvent e){
+                if(mSuggestions.size()==1) {
+                    System.out.println("long press is work : " + mSuggestions.indexOf(0));
+                }
+
+            }
+
         });
         setHorizontalFadingEdgeEnabled(true);
         setWillNotDraw(false);
@@ -306,6 +314,8 @@ public class Candidate_view extends View {
                 removeHighlight();
                 requestLayout();
                 break;
+
+
         }
         return true;
     }
