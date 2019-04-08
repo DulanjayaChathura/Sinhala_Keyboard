@@ -14,5 +14,5 @@
 
     <color name="candidate_highlight">#ff808080</color>
     <color name="candidateViewColor">#dbdada</color>
-
+    <color name="candidate_special">#FF0000</color>
 </resources>

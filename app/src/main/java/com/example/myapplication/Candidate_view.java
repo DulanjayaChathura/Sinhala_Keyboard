@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -39,6 +40,7 @@ public class Candidate_view extends View {
     private int mColorNormal;
     private int mColorRecommended;
     private int mColorOther;
+    private int mColorSpecial;
     private int mVerticalPadding;
     private Paint mPaint;
     private boolean mScrolled;
@@ -54,6 +56,7 @@ public class Candidate_view extends View {
      *
      * @param context
      */
+
     public Candidate_view(Context context) {
         super(context);
         Resources r = context.getResources();
@@ -70,15 +73,17 @@ public class Candidate_view extends View {
         setBackgroundColor(r.getColor(R.color.candidate_background));
 
         mColorNormal = r.getColor(R.color.candidate_normal);
+        mColorSpecial=r.getColor(R.color.candidate_special);
         mColorRecommended = r.getColor(R.color.candidate_recommended);
         mColorOther = r.getColor(R.color.candidate_other);
         mVerticalPadding = r.getDimensionPixelSize(R.dimen.candidate_vertical_padding);
 
         mPaint = new Paint();
-        mPaint.setColor(mColorNormal);
+      //  mPaint.setColor(mColorNormal);
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(r.getDimensionPixelSize(R.dimen.candidate_font_height));
         mPaint.setStrokeWidth(0);
+        mPaint.setColor(mColorNormal);
 
         mGestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
@@ -100,10 +105,14 @@ public class Candidate_view extends View {
                 return true;
             }
             @Override
-            public  void onLongPress (MotionEvent e){
-                if(mSuggestions.size()==1) {
-                    System.out.println("long press is work : " + mSuggestions.indexOf(0));
+            public  void onLongPress (MotionEvent e) {
+
+                String wrongWord=mSuggestions.get(0);
+                if(mSelectedIndex==0 && wrongWord.startsWith("\"")) {
+   //                 mService.writeWord(wrongWord.split("\"")[1]);
+                   // System.out.println("long press is work : " + mSuggestions.get(0).split("\"")[1]);
                 }
+      //          System.out.println("selected index : "+mSelectedIndex);
 
             }
 
@@ -179,15 +188,20 @@ public class Candidate_view extends View {
                 break;
             }
             String suggestion = mSuggestions.get(i);// size of the suggetion list
+//            if(mSuggestions.size()==1){
+//          //      System.out.println("This line is ok ");
+//                mPaint.setColor(mColorSpecial);
+//            }else{mPaint.setColor(mColorNormal);}
+
             float textWidth = paint.measureText(suggestion);
             final int wordWidth = (int) textWidth + X_GAP * 2;
      //       mWordX[i] = x;// count the sum of the length (word1+ word2) 200 line
             mWordWidth[i] = wordWidth;// entire word i width
-            paint.setColor(mColorNormal);
+         //   paint.setColor(mColorNormal);
             if (touchX + scrollX >= x && touchX + scrollX < x + wordWidth && !scrolled) {
-                System.out.println("Scrolled lsength :" +scrollX);
-                System.out.println("touchX :" +touchX);
-                System.out.println("scrolled :" +scrolled);
+//                System.out.println("Scrolled lsength :" +scrollX);
+//                System.out.println("touchX :" +touchX);
+//                System.out.println("scrolled :" +scrolled);
                 if (canvas != null) {
                    canvas.translate(x, 0);
                    mSelectionHighlight.setBounds(0, bgPadding.top, wordWidth, height);
@@ -197,15 +211,15 @@ public class Candidate_view extends View {
                 mSelectedIndex = i;
             }
             if (canvas != null) {
-                if ((i == 1 && !typedWordValid) || (i == 0 && typedWordValid)) {
-                    paint.setFakeBoldText(true);
-                    paint.setColor(mColorRecommended);
-                } else if (i != 0) {
-                    paint.setColor(mColorOther);
-                }
+//                if ((i == 1 && !typedWordValid) || (i == 0 && typedWordValid)) {
+//                    paint.setFakeBoldText(true);
+//                    paint.setColor(mColorRecommended);
+//                } else if (i != 0) {
+//                    paint.setColor(mColorOther);
+//                }
 
                 canvas.drawText(suggestion, x + X_GAP, y, paint);
-                paint.setColor(mColorOther);
+  //              paint.setColor(mColorOther);
                     // draw the horizontal lines
                 canvas.drawLine(x + wordWidth + .5f, bgPadding.top,
                         x + wordWidth + .5f, height + 1, paint);
@@ -295,7 +309,7 @@ public class Candidate_view extends View {
             case MotionEvent.ACTION_MOVE:
                 if (y <= 0) {
                     // Fling up!?
-                    if (mSelectedIndex >= 0) {//we need to take the index of touched word
+                    if (mSelectedIndex >0) {//we need to take the index of touched word
                      //   System.out.println("Index : "+mSelectedIndex);
                         mService.pickSuggestionManually(mSelectedIndex);
 
@@ -306,7 +320,7 @@ public class Candidate_view extends View {
                 break;
             case MotionEvent.ACTION_UP:
                 if (!mScrolled) {
-                    if (mSelectedIndex >= 0) {
+                    if (mSelectedIndex >0) {
                         mService.pickSuggestionManually(mSelectedIndex);
                     }
                 }

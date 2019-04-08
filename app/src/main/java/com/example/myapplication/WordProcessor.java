@@ -1,3 +1,5 @@
+
+/*
 package com.example.myapplication;
 
 import android.util.Log;
@@ -29,7 +31,7 @@ public class WordProcessor{
         //this.sinhalaDictionary= dictionary.getDictionary();
         CopyOnWriteArrayList<String> wordList=this.dictionary.getSinhalaWordList().get(word);
         // this part is ok!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        Log.d("wordList", "dic word "+ wordList);
+       // Log.d("wordList", "dic word "+ wordList);
         ArrayList<String> wordArrayList=new ArrayList<String>();
         if(wordList!=null) {
             for (int i = 0; i < Math.min(wordList.size(),6); i++) {
@@ -48,3 +50,4 @@ public class WordProcessor{
 
 
 }
+*/
