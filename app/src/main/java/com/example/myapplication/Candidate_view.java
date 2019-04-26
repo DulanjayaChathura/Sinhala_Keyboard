@@ -9,17 +9,20 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.constraint.solver.widgets.Snapshot;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-
+import android.widget.Toast;
 
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Candidate_view extends View {
+public class Candidate_view extends View{
     private static final int OUT_OF_BOUNDS = -1;
     private SinhalaKeyboard mService;
     private List<String> mSuggestions;
@@ -34,7 +37,7 @@ public class Candidate_view extends View {
 
     private int[] mWordWidth = new int[MAX_SUGGESTIONS];
     private int[] mWordX = new int[MAX_SUGGESTIONS];
-    private static final int X_GAP = 20;
+    private static final int X_GAP = 50;
 
     private static final List<String> EMPTY_LIST = new ArrayList<String>();
     private int mColorNormal;
@@ -50,6 +53,10 @@ public class Candidate_view extends View {
     private final int extraHeight = 25;
 
     private GestureDetector mGestureDetector;
+    private boolean isUndo;
+    private Snackbar snackbar;
+    private CoordinatorLayout coordinatorLayout;
+
 
     /**
      * Construct a CandidateView for showing suggested words for completion.
@@ -59,6 +66,7 @@ public class Candidate_view extends View {
 
     public Candidate_view(Context context) {
         super(context);
+
         Resources r = context.getResources();
         mSelectionHighlight = r.getDrawable(
                 android.R.drawable.list_selector_background);
@@ -68,6 +76,7 @@ public class Candidate_view extends View {
                 android.R.attr.state_window_focused,
                 android.R.attr.state_pressed
         });
+
 
 
         setBackgroundColor(r.getColor(R.color.candidate_background));
@@ -106,11 +115,13 @@ public class Candidate_view extends View {
             }
             @Override
             public  void onLongPress (MotionEvent e) {
-
                 String wrongWord=mSuggestions.get(0);
                 if(mSelectedIndex==0 && wrongWord.startsWith("\"")) {
-   //                 mService.writeWord(wrongWord.split("\"")[1]);
-                   // System.out.println("long press is work : " + mSuggestions.get(0).split("\"")[1]);
+                    String splitedWrongWord=wrongWord.split("\"")[1];
+                    mService.writeNewWord(splitedWrongWord);
+                    Toast toast=Toast.makeText(mService,splitedWrongWord+" is added into dictionary",Toast.LENGTH_SHORT);
+                    toast.show();
+       //             System.out.println("press is work : " + mSuggestions.get(0).split("\"")[1]);
                 }
       //          System.out.println("selected index : "+mSelectedIndex);
 
@@ -121,13 +132,22 @@ public class Candidate_view extends View {
         setWillNotDraw(false);
         setHorizontalScrollBarEnabled(false);
         setVerticalScrollBarEnabled(false);
-    }
-
+        }
+//        public void createSnackbar(){
+//            coordinatorLayout=findViewById(R.id.coordinatorLayout);
+//            snackbar= Snackbar.make(coordinatorLayout,"word is added into dictionary",Snackbar.LENGTH_SHORT);
+//            snackbar.setAction("undo", mService.getmCandidateView());
+//
+//        }
     /**
      * A connection back to the service to communicate with the text field
      *
      * @param  listener
      */
+
+
+
+
     public void setService(SinhalaKeyboard listener) {
         mService = listener;
     }
@@ -357,6 +377,9 @@ public class Candidate_view extends View {
         mTouchX = OUT_OF_BOUNDS;
         invalidate();
     }
+
+
+
 }
 
 
