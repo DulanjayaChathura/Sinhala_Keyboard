@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#4D5656  </color>
+    <color name="colorPrimaryDark">#272729  </color>
     <color name="colorAccent">#D81B60</color>
-    <color name="keyboard_background_color">#4D5656  </color>
-    <color name="keyboard_divider">#4D5656  </color>
+    <color name="keyboard_background_color">#272729 </color>
+    <color name="keyboard_divider">#272729 </color>
     <color name="keyboard_pressed">#95a5a6</color>
+    <color name="background">#272729 </color>
 
     <color name="candidate_normal">#ffffffff</color>
     <color name="candidate_recommended">#ffffffff</color>
     <color name="candidate_other">#ffffffff</color>
-    <color name="candidate_background">#4D5656</color>
+    <color name="candidate_background">#272729</color>
 
     <color name="candidate_highlight">#ff808080</color>
     <color name="candidateViewColor">#dbdada</color>

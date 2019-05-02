@@ -56,6 +56,7 @@ public class Candidate_view extends View{
     private boolean isUndo;
     private Snackbar snackbar;
     private CoordinatorLayout coordinatorLayout;
+    private String[] mWordSeparators="!1234567890 @#$%&*-=()!\"':;/?«~±×÷•°`´{}©£€^®¥_+[]¡<>¢|\\¿»".split("");
 
 
     /**
@@ -79,6 +80,7 @@ public class Candidate_view extends View{
 
 
 
+
         setBackgroundColor(r.getColor(R.color.candidate_background));
 
         mColorNormal = r.getColor(R.color.candidate_normal);
@@ -88,7 +90,7 @@ public class Candidate_view extends View{
         mVerticalPadding = r.getDimensionPixelSize(R.dimen.candidate_vertical_padding);
 
         mPaint = new Paint();
-      //  mPaint.setColor(mColorNormal);
+        //  mPaint.setColor(mColorNormal);
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(r.getDimensionPixelSize(R.dimen.candidate_font_height));
         mPaint.setStrokeWidth(0);
@@ -98,7 +100,7 @@ public class Candidate_view extends View{
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2,
                                     float distanceX, float distanceY) {
-         //     System.out.println("GestureDetector is ok");
+                //     System.out.println("GestureDetector is ok");
                 mScrolled = true;
                 int sx = getScrollX();
                 sx += distanceX;
@@ -115,16 +117,23 @@ public class Candidate_view extends View{
             }
             @Override
             public  void onLongPress (MotionEvent e) {
-                String wrongWord=mSuggestions.get(0);
-                if(mSelectedIndex==0 && wrongWord.startsWith("\"")) {
-                    String splitedWrongWord=wrongWord.split("\"")[1];
-                    mService.writeNewWord(splitedWrongWord);
-                    Toast toast=Toast.makeText(mService,splitedWrongWord+" is added into dictionary",Toast.LENGTH_SHORT);
+                if(mSelectedIndex==0){
+                    String wrongWord=mService.getTypedWord();
+                   // System.out.println();
+                    for (String i : mWordSeparators){
+                        if(i.length()!=0 && wrongWord.contains(i)){
+                            //      System.out.println("i value "+i.length());
+                            Toast toast=Toast.makeText(mService,wrongWord+" cannot be added into dictionary",Toast.LENGTH_SHORT);
+                            toast.show();
+                            return;}
+                    }
+                    mService.writeNewWord(wrongWord);
+                    Toast toast=Toast.makeText(mService,wrongWord+" is added into dictionary",Toast.LENGTH_SHORT);
                     toast.show();
-       //             System.out.println("press is work : " + mSuggestions.get(0).split("\"")[1]);
-                }
-      //          System.out.println("selected index : "+mSelectedIndex);
 
+                }
+                    //             System.out.println("press is work : " + mSuggestions.get(0).split("\"")[1]);
+                //          System.out.println("selected index : "+mSelectedIndex);
             }
 
         });
@@ -132,7 +141,7 @@ public class Candidate_view extends View{
         setWillNotDraw(false);
         setHorizontalScrollBarEnabled(false);
         setVerticalScrollBarEnabled(false);
-        }
+    }
 //        public void createSnackbar(){
 //            coordinatorLayout=findViewById(R.id.coordinatorLayout);
 //            snackbar= Snackbar.make(coordinatorLayout,"word is added into dictionary",Snackbar.LENGTH_SHORT);
@@ -156,15 +165,15 @@ public class Candidate_view extends View{
     public int computeHorizontalScrollRange() {
         return mTotalWidth;
     }
-// handle the draw layout
-   @Override
+    // handle the draw layout
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int measuredWidth = resolveSize(50, widthMeasureSpec);
 
         // Get the desired height of the icon menu view (last row of items does
         // not have a divider below)
         Rect padding = new Rect();
-    //    mSelectionHighlight.getPadding(padding);
+        mSelectionHighlight.getPadding(padding);
         final int desiredHeight = ((int) mPaint.getTextSize()) + mVerticalPadding
                 + padding.top + padding.bottom + extraHeight;
 
@@ -201,7 +210,7 @@ public class Candidate_view extends View{
         final boolean scrolled = mScrolled;
         final boolean typedWordValid = mTypedWordValid;
         final int y = (int) (((height - mPaint.getTextSize()) / 2) - mPaint.ascent());
-      //  System.out.println("scrolled : "+mScrolled);
+        //  System.out.println("scrolled : "+mScrolled);
         for (int i = 0; i < count; i++) {
             // Break the loop. This fix the app from crashing.
             if(i >= MAX_SUGGESTIONS){
@@ -215,17 +224,17 @@ public class Candidate_view extends View{
 
             float textWidth = paint.measureText(suggestion);
             final int wordWidth = (int) textWidth + X_GAP * 2;
-     //       mWordX[i] = x;// count the sum of the length (word1+ word2) 200 line
+            //       mWordX[i] = x;// count the sum of the length (word1+ word2) 200 line
             mWordWidth[i] = wordWidth;// entire word i width
-         //   paint.setColor(mColorNormal);
+            //   paint.setColor(mColorNormal);
             if (touchX + scrollX >= x && touchX + scrollX < x + wordWidth && !scrolled) {
 //                System.out.println("Scrolled lsength :" +scrollX);
 //                System.out.println("touchX :" +touchX);
 //                System.out.println("scrolled :" +scrolled);
                 if (canvas != null) {
-                   canvas.translate(x, 0);
-                   mSelectionHighlight.setBounds(0, bgPadding.top, wordWidth, height);
-                   mSelectionHighlight.draw(canvas);
+                    canvas.translate(x, 0);
+                    mSelectionHighlight.setBounds(0, bgPadding.top, wordWidth, height);
+                    mSelectionHighlight.draw(canvas);
                     canvas.translate(-x, 0);
                 }
                 mSelectedIndex = i;
@@ -239,8 +248,8 @@ public class Candidate_view extends View{
 //                }
 
                 canvas.drawText(suggestion, x + X_GAP, y, paint);
-  //              paint.setColor(mColorOther);
-                    // draw the horizontal lines
+                //              paint.setColor(mColorOther);
+                // draw the horizontal lines
                 canvas.drawLine(x + wordWidth + .5f, bgPadding.top,
                         x + wordWidth + .5f, height + 1, paint);
                 paint.setFakeBoldText(false);
@@ -303,25 +312,13 @@ public class Candidate_view extends View{
         if (mGestureDetector.onTouchEvent(me)) {
             return true;
         }
-       // System.out.println("touch is working");
+        // System.out.println("touch is working");
 
         int action = me.getAction();
         int x = (int) me.getX();
         int y = (int) me.getY();
         mTouchX = x;// x coordinate of the event
-     //   System.out.println("value of x :"+x);
-    //    Log.d("width of the one words :" ," ");
-    //    for(int i=0;i<mWordWidth.length;i++){
-     //       System.out.println(mWordWidth[i]);
-    //    }
-
-//        System.out.println("width of the sum of the words :" );
-//        for(int i=0;i<mWordX.length;i++){
-//            System.out.println(mWordX[i]);
-//        }
- //       System.out.println("--------------------------------------------------");
-
-            switch (action) {
+        switch (action) {
             case MotionEvent.ACTION_DOWN:
                 mScrolled = false;
                 invalidate();
@@ -330,7 +327,7 @@ public class Candidate_view extends View{
                 if (y <= 0) {
                     // Fling up!?
                     if (mSelectedIndex >0) {//we need to take the index of touched word
-                     //   System.out.println("Index : "+mSelectedIndex);
+                        //   System.out.println("Index : "+mSelectedIndex);
                         mService.pickSuggestionManually(mSelectedIndex);
 
                         mSelectedIndex = -1;
@@ -348,8 +345,6 @@ public class Candidate_view extends View{
                 removeHighlight();
                 requestLayout();
                 break;
-
-
         }
         return true;
     }
@@ -368,7 +363,7 @@ public class Candidate_view extends View{
         // To detect candidate
         onDraw(null);
         if (mSelectedIndex >= 0) {
-         //   mService.pickSuggestionManually(mSelectedIndex);
+            //   mService.pickSuggestionManually(mSelectedIndex);
         }
         invalidate();
     }
@@ -381,266 +376,3 @@ public class Candidate_view extends View{
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
-
-import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.util.AttributeSet;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class Candidate_view extends View {
-
-
-    private List<String> suggetion;
-    private SinhalaKeyboard keyboardService;
-    private SinhalaKeyboard service;
-
-    private int colorNormal;
-    private int colorRecommended;
-    private int colorOther;
-    private int verticalPadding;
-    private Drawable selectionHighlight;
-    private Paint paint;
-    private int totalWidth;
-    private GestureDetector gestureDetector;
-    private boolean typeWordValid;
-    private Rect padding;
-    private boolean isScrolled;
-    private int targetScroll;
-    private int extraHeight=25;
-    private static final int OUT_OF_BOUNDS = -1;
-    private int touchX = OUT_OF_BOUNDS;
-    private int selectedIndex;
-
-
-    private static final int MAX_SUGGETION=3;
-    private static final int SCROLL_PIXELS=20;
-    private static final int gap=10;
-
-    private int[] wordWidth=new int[MAX_SUGGETION];
-    private int[] word=new int[MAX_SUGGETION];
-    private static final List<String> EMPTY_LIST = new ArrayList<String>();
-
-
-    public Candidate_view(Context context) {
-        super(context);
-
-        selectionHighlight = context.getResources().getDrawable(
-                android.R.drawable.list_selector_background);
-        selectionHighlight.setState(new int[]{
-                android.R.attr.state_enabled,
-                android.R.attr.state_focused,
-                android.R.attr.state_window_focused,
-                android.R.attr.state_pressed
-        });
-
-
-        Resources r = context.getResources();
-        setBackgroundColor(r.getColor(R.color.candidate_background));
-        colorNormal = r.getColor(R.color.candidate_normal);
-        colorRecommended = r.getColor(R.color.candidate_recommended);
-        colorOther = r.getColor(R.color.candidate_other);
-        verticalPadding = r.getDimensionPixelSize(R.dimen.candidate_vertical_padding);
-
-        paint = new Paint();
-        paint.setColor(colorNormal);
-        paint.setTextSize(r.getDimensionPixelSize(R.dimen.candidate_font_height));
-        paint.setStrokeWidth(0);
-
-        gestureDetector=new GestureDetector(new GestureDetector.SimpleOnGestureListener(){
-            public boolean onScroll(MotionEvent e1,MotionEvent e2,float distanceX,float distanceY){
-                isScrolled=true;
-                int sx = getScrollX();
-                sx +=distanceX;
-                if (sx<0) {
-                    sx=0;
-                }
-                if(sx+getWidth()>totalWidth){
-                    sx-=distanceX;
-                }
-                targetScroll=sx;
-
-                scrollTo(sx,getScrollY());
-
-                //onDraw(null)
-                invalidate();
-                requestLayout();
-
-                return true;
-            }
-
-        });
-
-
-
-
-
-
-        setHorizontalFadingEdgeEnabled(true);
-        setWillNotDraw(false);
-        setHorizontalScrollBarEnabled(false);
-        setVerticalScrollBarEnabled(false);
-
-    }
-    public int computeHorizontalScrollRange(){
-        return totalWidth;
-    }
-
-
-    public void setService(SinhalaKeyboard listner) {
-        service = listner;
-    }
-
-    public void setSuggetion(List<String> suggestion, boolean completion,boolean typeWordValid){
-        clear();
-        if(suggetion != null){
-            suggestion=new ArrayList<String>(suggetion);
-        }
-        this.typeWordValid=typeWordValid;
-        scrollTo(0,0);
-        //onDraw(null);
-
-    }
-    public void clear(){
-        suggetion=EMPTY_LIST;
-        touchX=OUT_OF_BOUNDS;
-        selectedIndex=-1;
-        invalidate();
-    }
-
-}
-
- public class Candidate_view extends LinearLayout {
- private ArrayList<Button> wordButtonList;
- private ArrayList<Button> wordList;
- private LinearLayout wordbar;
- private int result_max;
- private Context ctx;
- private int wordLevel;
-
- private int show_div;
- private int show_rem;
- private int show_max;
- private SinhalaKeyboard service;
-
-
-
- public Candidate_view(Context context, AttributeSet attr){
-
- super(context,attr);
- }
- protected void onFinishInflate() {
- super.onFinishInflate();
- this.wordButtonList = new ArrayList<Button>();
- this.wordbar = (LinearLayout) this.findViewById(R.id.wordbar);
-
- LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, 1);
- for (int i = 0; i < result_max; i++) {
- Button b = new Button(ctx);
- b.setTextColor(this.getResources().getColor(R.color.candidate_normal));
- b.setTextSize(this.getResources().getDimension(R.dimen.keychar_size));
- b.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.button));
- this.wordButtonList.add(b);
- this.wordbar.addView(b, lp);
- b.setOnClickListener(new WordButtonOnClickListener(this));
- }
- }
- protected void cleanWords(){
- for (int i = 0; i < result_max; i++) {
- Button b = this.wordButtonList.get(i);
- b.setText("\u3000");
- }
- this.invalidate();
- }
-
- protected int getWordlevel() {
- return this.wordLevel;
- }
-
- protected void setWordlevel(int i) {
- this.wordLevel = Math.max(i,0);
- this.wordLevel = Math.min(this.show_div, this.wordLevel);
- }
- protected void showWords() {
- if (this.wordList.size() == 0) {
- this.cleanWords();
- return;
- }
- int show = (this.wordLevel == show_max)?show_rem:result_max;
- for (int i = 0; i < result_max; i++) {
- Button b = this.wordButtonList.get(i);
- if (i > show) {
- b.setText("\u3000");
- } else {
- b.setText(this.wordList.get(this.wordLevel * result_max + i).getText().toString());
- }
- }
- this.invalidate();
- }
- public void setService(SinhalaKeyboard listner){
-
- service=listner;
- }
- public SinhalaKeyboard getService() {
- return this.service;
- }
-
- public void didChooseWord() {
- this.wordLevel = 0;
- }
-
- }
-
-
- class WordButtonOnClickListener implements View.OnClickListener {
- private Candidate_view parnet;
- private int type;
- public WordButtonOnClickListener(Candidate_view p) {
- this.parnet = p;
- }
- public void onClick(View v) {
- // TODO Auto-generated method stub
- if (this.type == 0) {
- parnet.setWordlevel(parnet.getWordlevel()-1);
- } else {
- parnet.setWordlevel(parnet.getWordlevel()+1);
- }
- parnet.showWords();
- }
- }
-
- **/
-

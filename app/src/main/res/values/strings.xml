@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">My Application</string>
-    <string name="ime_name">Stroke5 Keyboard</string>
+    <string name="app_name">සිංහල </string>
+    <string name="ime_name">සිංහල </string>
     <string name="database_version">1</string>
     <string name="result_max">5</string>
     <string name="candidates_bottom_weight">3</string>

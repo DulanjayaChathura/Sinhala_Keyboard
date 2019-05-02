@@ -13,7 +13,7 @@
 
         <service
             android:name=".SinhalaKeyboard"
-            android:label="EDMTkeyboard"
+            android:label="සිංහල"
             android:permission="android.permission.BIND_INPUT_METHOD">
             <meta-data
                 android:name="android.view.im"
@@ -23,6 +23,7 @@
                 <!--Specifies the types of intents that an activity,service, or broadcast receiver can respond-->
                 <action android:name="android.view.InputMethod" />
             </intent-filter>
+
         </service>
     </application>
 

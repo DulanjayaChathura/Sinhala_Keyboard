@@ -1,8 +1,13 @@
 package com.example.myapplication;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.database.Cursor;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
+import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.text.method.MetaKeyKeyListener;
@@ -11,17 +16,17 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.CompletionInfo;
+import android.view.inputmethod.CursorAnchorInfo;
+import android.view.inputmethod.ExtractedText;
+import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import dictionary.Dictionary;
 
@@ -36,7 +41,9 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
     private String  type="language";// to keep a track of type whether it is symbol or language
     private boolean isCap=false;
     private Dictionary dictionary;
-
+    private int lengthBeforeCursor=0;
+    private int lengthAfterCursor=0;
+    private int position;
 
     /**keyboard  **/
 
@@ -62,18 +69,16 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
     private CoordinatorLayout coordinatorLayout;
     private Button button;
     private boolean isPressedUndo;
+    private boolean isChosenWord=false;
+    private boolean isScreenTouch;
+    private int redundantLetter;
+    private int[] redundancyList=new int[]{3540,3536,3530,3538,3535,3539,3571,3537,3542};
+
+
 //    private PopUp popUp;
 
 
     /**keyboard  **/
-
-
-
-   // public static String activeKeyboard;
-    //private Keyboard curKeyboard;
-
-
-
 
     public void onInitialize() {
         sinhalaKeyboard = new Keyboard(this, R.xml.keyboard1);
@@ -86,6 +91,12 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
 
 
 
+
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
     }
 
     @Override
@@ -95,6 +106,7 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
         //instantiate a layout XML file into its corresponding view object
         inputView.setKeyboard(sinhalaKeyboard);
         inputView.setOnKeyboardActionListener(this);
+
 
 
 
@@ -122,32 +134,9 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
         mCandidateView.findViewById(R.id.word_LinearLayout);
         setCandidatesView(mCandidateView);
         setCandidatesViewShown(true);
-
         return mCandidateView;
     }
 
-    /**
-     * Deal with the editor reporting movement of its cursor.
-     */
-//    @Override
-//    public void onUpdateSelection(int oldSelStart, int oldSelEnd,
-//                                  int newSelStart, int newSelEnd,
-//                                  int candidatesStart, int candidatesEnd) {
-//        super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd,
-//                candidatesStart, candidatesEnd);
-//
-//        // If the current selection in the text view changes, we should
-//        // clear whatever candidate text we have.
-//        if (mComposing.length() > 0 && (newSelStart != candidatesEnd
-//                || newSelEnd != candidatesEnd)) {
-//            mComposing.setLength(0);
-//            updateCandidates();
-//            InputConnection ic = getCurrentInputConnection();
-//            if (ic != null) {
-//                ic.finishComposingText();
-//            }
-//        }
-//    }
 
     /**
      * This tells us about completions that the editor has determined based
@@ -170,40 +159,9 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
             }
             setSuggestions(stringList, true, true);
         }
+
     }
 
-    /**
-     * This translates incoming hard key events in to edit operations on an
-     * InputConnection.  It is only needed when using the
-     * PROCESS_HARD_KEYS option.
-     */
-    private boolean translateKeyDown(int keyCode, KeyEvent event) {
-        mMetaState = MetaKeyKeyListener.handleKeyDown(mMetaState,
-                keyCode, event);
-        int c = event.getUnicodeChar(MetaKeyKeyListener.getMetaState(mMetaState));
-        mMetaState = MetaKeyKeyListener.adjustMetaAfterKeypress(mMetaState);
-        InputConnection ic = getCurrentInputConnection();
-        if (c == 0 || ic == null) {
-            return false;
-        }
-
-        if ((c & KeyCharacterMap.COMBINING_ACCENT) != 0) {
-            c = c & KeyCharacterMap.COMBINING_ACCENT_MASK;
-        }
-
-        if (mComposing.length() > 0) {
-            char accent = mComposing.charAt(mComposing.length() - 1);
-            int composed = KeyEvent.getDeadChar(accent, c);
-            if (composed != 0) {
-                c = composed;
-                mComposing.setLength(mComposing.length() - 1);
-            }
-        }
-
-        onKey(c, null);
-
-        return true;
-    }
 
 
     public void setSuggestions(List<String> suggestions, boolean completions,
@@ -218,29 +176,26 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
             mCandidateView.setSuggestions(suggestions, completions, typedWordValid);
         }
     }
+   void removeCurrentWord(){
+       getCurrentInputConnection().deleteSurroundingText(lengthBeforeCursor, lengthAfterCursor);
+
+
+   }
 
     // Tap on suggestion to commit
     public void pickSuggestionManually(int index) {
-//        if (mCompletionOn  && index >= 0 && index < mCompletions.length) {
-//            CompletionInfo ci = mCompletions[index];
-//            getCurrentInputConnection().commitCompletion(ci);
-//            if (mCandidateView != null) {
-//                mCandidateView.clear();
-//            }
-//        }
-    //    System.out.println("mComposing length : "+mComposing.length());
-        if (mComposing.length() > 0) {
-            // If we were generating candidate suggestions for the current
-            // text, we would commit one of them here. But for this sample,
-            // we will just commit the current text.
-            mComposing.setLength(index);
-            mComposing = new StringBuilder(list.get(index));
-            typedWord=mComposing.toString();// set the suggetion word list according to picked word
-  //          System.out.println("This is the composing text : "+mComposing);
-            getCurrentInputConnection().setComposingText(mComposing, 1);
+        getCurrentDetails();
+        removeCurrentWord();
+
+        if (typedWord.length() > 0) {
+            String selectedWord = list.get(index);
+            typedWord=selectedWord;
+            getCurrentInputConnection().commitText(typedWord , 1);
+            isChosenWord=true;
 
         }
     }
+
 
 
     public void onPress(int primaryCode) {
@@ -295,51 +250,117 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
         return separators.contains(String.valueOf((char)code));
     }
 
-//    private void handleCharacter(int primaryCode, int[] keyCodes) {
-//        if (isInputViewShown()) {
-//            if (mInputView.isShifted()) {
-//                primaryCode = Character.toUpperCase(primaryCode);
-//            }
-//        }
-//        if (mPredictionOn) {
-//            mComposing.append((char) primaryCode);
-//            getCurrentInputConnection().setComposingText(mComposing, 1);
-//            updateShiftKeyState(getCurrentInputEditorInfo());
-//            updateCandidates();
-//        } else {
-//            getCurrentInputConnection().commitText(
-//                    String.valueOf((char) primaryCode), 1);
-//        }
-//    }
+    /**
+     * Deal with the editor reporting movement of its cursor.
+     */
+    @Override
+    public void onUpdateSelection(int oldSelStart, int oldSelEnd,
+                                  int newSelStart, int newSelEnd,
+                                  int candidatesStart, int candidatesEnd) {
+        super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd,
+                candidatesStart, candidatesEnd);
 
-    private void handleCharacter(int primaryCode, int[] keyCodes) {
-        mComposing.append((char) primaryCode);
-        typedWord=mComposing.toString();
-        if(!isWordValid){
-
-        }
-      // getCurrentInputConnection().commitText(String.valueOf((char)primaryCode),1);
-        getCurrentInputConnection().setComposingText(mComposing, 1);
-        if (isWordSeparator(primaryCode)) {
-           typedWord="";
-            getCurrentInputConnection().finishComposingText();
-                mComposing.setLength(0);
+        // If the current selection in the text view changes, we should
+        // clear whatever candidate text we have.
+        if (mComposing.length() > 0 && (newSelStart != candidatesEnd
+                || newSelEnd != candidatesEnd)) {
+            mComposing.setLength(0);
 
 
-
-            //  updateShiftKeyState(getCurrentInputEditorInfo());
-    //    } else {
-        //    typedWord+=(String.valueOf((char)primaryCode));
-            //System.out.println("typedWord :!!!!!!!!!" + typedWord);
-
-
+            InputConnection ic = getCurrentInputConnection();
+            if (ic != null) {
+                ic.finishComposingText();
+          }
 
         }
-     //   System.out.println(mComposing.toString());
-
-        mCandidateView.clear();
+        mComposing.length();
+        getCurrentDetails();
         updateCandidates();
     }
+    private void getCurrentDetails(){
+        String leftPart="";
+        String rigthPart="" ;
+        int countOfSpace;
+        CharSequence part;
+        String[] array;
+        String leftLastWord="";
+        String rightFirstWord="";
+        StringBuilder currentWord = new StringBuilder("");
+        int beforeLength = 0;
+        ExtractedText text = getCurrentInputConnection().getExtractedText(new ExtractedTextRequest(), 0);
+        if(text==null){return;}
+        position = text.selectionStart;
+        CharSequence enteredText = text.text.toString();
+//              System.out.println("position "+position);
+//        System.out.println("entered text "+enteredText.length());
+        if(position!=0){
+        leftPart = ((String) enteredText).substring(0, position).replaceAll("\\n", " ");
+        array = leftPart.split(" ");
+        if(!(array.length==0)){ leftLastWord=array[array.length-1];}
+        }
+        if(!(enteredText.length()==position)){
+        rigthPart=((String) enteredText).substring(position,enteredText.length());
+           rightFirstWord=rigthPart.replaceAll("\\n", " ").split(" ")[0];
+        }
+        beforeLength=position;
+        if(!leftPart.endsWith(" ") && !rigthPart.startsWith(" ")){
+//            System.out.println("part 1");
+//            System.out.println("left part "+leftPart);
+            beforeLength-=leftLastWord.length();
+            currentWord=new StringBuilder(leftLastWord.concat(rightFirstWord));
+
+        }
+        else if(leftPart.endsWith(" ") && !rigthPart.startsWith(" ")){
+//            System.out.println("part 2");
+            currentWord=new StringBuilder(rightFirstWord);
+
+        }
+        lengthBeforeCursor=position-beforeLength;
+        lengthAfterCursor=beforeLength+currentWord.length()-position;
+        if(!leftPart.endsWith(" ") && rigthPart.startsWith(" ")){
+            currentWord=new StringBuilder(leftLastWord);
+            lengthAfterCursor=position-beforeLength;
+            lengthBeforeCursor=beforeLength+currentWord.length()-position;
+        }
+
+        typedWord=currentWord.toString();
+//        System.out.println("current word "+currentWord.toString());
+//        System.out.println("beforeLength "+beforeLength);
+//        System.out.println("rightFirstWord "+rightFirstWord);
+//        System.out.println("leftFirstWord "+leftLastWord);
+//        System.out.println("curren word length "+currentWord.length());
+//        System.out.println("lenght Berofecursor "+lengthBeforeCursor);
+//        System.out.println("lenght afterfecursor "+lengthAfterCursor);
+
+
+    }
+    private boolean reduceRedundancy(int primaryCode){
+        if(redundantLetter==primaryCode){
+            for(int i : redundancyList){
+                if(i==primaryCode){
+                    return true;
+                }
+            }
+        }
+        redundantLetter=primaryCode;
+        return false;
+    }
+
+    private void handleCharacter(int primaryCode, int[] keyCodes) {
+        if(reduceRedundancy(primaryCode)){return;}
+        mComposing.append((char) primaryCode);
+        getCurrentInputConnection().commitText(mComposing, 1);
+        if (isWordSeparator(primaryCode)) {
+            typedWord="";
+            getCurrentInputConnection().finishComposingText();
+            mComposing.setLength(0);
+        }
+        mCandidateView.clear();
+        updateCandidates();
+        getCurrentDetails();
+    }
+
+
 
 
     /**
@@ -352,24 +373,21 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
         if(!(list==null)) {// other wise we cannot clear the Arraylist
             list.clear();// clear the entire word list
         }
+
         if (!mCompletionOn) {
             InputStream inputStream;
             try{
                 if(!typedWord.equals("")) {
-
                 }
-
                 if (typedWord.length() > 0 && !typedWord.equals("")) {
                     inputStream=getAssets().open(typedWord.substring(0,1)+".txt");
 
                     suggestedList.clear();
 
                     suggestedList=dictionary.getWordList(typedWord,inputStream,this);//error
-     //               System.out.println("TypedWordLength : "+typedWord.length());
-     //               System.out.println("isWordCorrect : "+dictionary.isWordCorrect(typedWord));
+
                     if(!suggestedList.isEmpty()){
                         if(!dictionary.isWordCorrect(typedWord) && typedWord.length()>1 ){
-                            //                     System.out.println(typedWord.length()==1);
 
                             list.add('"'+typedWord+'"');
                         }else
@@ -377,14 +395,9 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
                         }if(suggestedList.contains(typedWord)) {
                             suggestedList.remove(typedWord);
 
-                     //   else{suggestedList.add(typedWord);}// remove the typed word if it is in dictionary
                         }
                         list.addAll(suggestedList);
-//                        list.stream().distinct().collect(Collectors.<String>toList());
-//                        Set<String> set = new HashSet<>(list);// remove duplicates
-//                        list.clear();
-//                        list.addAll(set);
-//                        System.out.println(list);
+
                         isSuggetionListEmplty=false;
 
                     }else if(typedWord.length()>1){
@@ -406,9 +419,11 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
             }
             catch(NullPointerException e){
             //    System.out.println(e);
-                Log.d("NullPointerException",e.toString());
+                Log.d("updade candidate",e.getMessage());
             }catch(IOException e){
-                Log.d("IOException",e.toString());
+                typedWord="";
+                updateCandidates();
+                Log.d("updade candidate",e.getMessage());
             }
 
 
@@ -419,33 +434,23 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
 
     }
     private void handleBackspace() {
-
-        getCurrentInputConnection().deleteSurroundingText(1, 0);// delete surrounding text
-        if (isSuggetionListEmplty | typedWord.length()==0) {
-            mComposing.setLength(0);
-        }
-        if (typedWord.length() > 0) {
-            typedWord = typedWord.substring(0, typedWord.length()-1);
- //           mComposing.delete(mComposing.length()-1,mComposing.length());
-//            System.out.println("string builder : "+mComposing.toString());
-            mComposing.setLength(typedWord.length());
-            mComposing = new StringBuilder(typedWord);
+        if(mComposing.length()>0) {
+            mComposing.deleteCharAt(mComposing.length()-1);
+            typedWord = mComposing.toString();
             getCurrentInputConnection().setComposingText(mComposing, 1);
-
-            updateCandidates();
-
+        }else{
+            getCurrentInputConnection().deleteSurroundingText(1,0);// delete surrounding text
         }
-//        if (typedWord.length() == 0) {
-//            setCandidatesViewShown(false);
-//        }
-
-      //  System.out.println("Typedword :"+typedWord);
-      //  System.out.println("composing :"+mComposing.toString());
+        if(position==0){return;}
+        getCurrentDetails();
+        updateCandidates();
+        redundantLetter=0;
     }
     /**
      * This is called when the user is done editing a field.  We can use
      * this to reset our state.
      */
+
     @Override public void onFinishInput() {
       //  System.out.println("this is working");
         super.onFinishInput();
@@ -454,22 +459,11 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
         mComposing.setLength(0);
         updateCandidates();
 
-        // We only hide the candidates window when finishing input on
-        // a particular editor, to avoid popping the underlying application
-        // up and down if the user is entering text into the bottom of
-        // its window.
-        //setCandidatesViewShown(false);
-
-
     }
     /** keyboard test**/
     @Override
     public void onKey(int primaryCode, int[] keyCodes) {
-    //send a key press to listener
         InputConnection ic=getCurrentInputConnection();
-        //Retrieve the currently active InputConnection that is bound to the input method, or null if there is none.
-        //playClick(primaryCode);//if want to add sounds
-        //switch case statement
         switch(primaryCode) {
             case Keyboard.KEYCODE_DELETE:
                 handleBackspace();
@@ -574,6 +568,11 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
     //Called when the user quickly moves the finger from down to up.
     }
 
+    public ArrayList<String> getList() {
+        return list;
+    }
 
-
+    public String getTypedWord() {
+        return typedWord;
+    }
 }

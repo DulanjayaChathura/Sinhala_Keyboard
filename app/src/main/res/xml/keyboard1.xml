@@ -11,7 +11,7 @@
     >
 
     <Row>
-        <Key android:codes="3540,3530;8205;3515" android:keyLabel="ු" android:keyEdgeFlags="left"/>
+        <Key android:codes="3540" android:keyLabel="ු" android:keyEdgeFlags="left"/>
         <Key android:codes="3461" android:keyLabel="අ"/>
         <Key android:codes="3536" android:keyLabel="ැ"/>
         <Key android:codes="3515" android:keyLabel="ර"/>

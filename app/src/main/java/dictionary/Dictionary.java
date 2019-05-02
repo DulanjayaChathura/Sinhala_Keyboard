@@ -37,20 +37,29 @@ public class Dictionary extends InputMethodService {
         try {
             InputStream inputStream = context.openFileInput(fileName + ".txt");
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader,20000);
 
             while ((line = bufferedReader.readLine()) != null) {
                 String[] splitLine = line.split(" ");
 
                 //Collections.addAll(split, splitLine);// adding two arrays
                 for (String var : splitLine) {
-                    if (!var.equals("")) {
-                        //                 System.out.println("word generator : "+var);
-                        split.add(var);
-                    }
+                    split.add(var);
+
+//                    if (!(var.equals("")|var.contains(" ") )){
+//                        //                 System.out.println("word generator : "+var);
+//                        split.add(var);
+//                    }
 
                 }
             }
+            inputStream.close();
+            inputStreamReader.close();
+            bufferedReader.close();
+         //   System.out.println("split "+split.get(0).length());
+         //   System.out.println("split "+split.size());
+
+
         } catch (FileNotFoundException e) {
             Log.d("wordListGenerator", e.getMessage());
         } catch (IOException e) {
@@ -61,19 +70,25 @@ public class Dictionary extends InputMethodService {
     }
 
     private void writeOnFile(String fileName) {
+        //System.out.println("warning here");
+        InputStreamReader inputStreamReader;
+        BufferedReader reader;
+        OutputStreamWriter outputStreamWriter;
         try {
+//            if(split.contains(" ")){
+//                System.out.println("there is space");
+//            }
 
             if (inputStream != null) {
                 String line;
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader reader = new BufferedReader(inputStreamReader);
-
+                inputStreamReader = new InputStreamReader(inputStream);
+                reader = new BufferedReader(inputStreamReader,20000);
                 for(String var: context.fileList()){
                    if((fileName+".txt").equals(var)){return;}
                 }
 
            //     System.out.println(con);
-                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput(fileName + ".txt", context.MODE_APPEND));
+                outputStreamWriter= new OutputStreamWriter(context.openFileOutput(fileName + ".txt", context.MODE_APPEND));
                 while ((line = reader.readLine()) != null) {
                     String[] splitLine = line.split(" ");
 
@@ -83,30 +98,34 @@ public class Dictionary extends InputMethodService {
                             //          System.out.println(var);
                             outputStreamWriter.write((var + " "));
                         }
-                        outputStreamWriter.flush();
+
                     }
                     //  Log.d("writeOnFile","this is !!!!!!!!! ok");
-
+                            outputStreamWriter.write('\n');
+                            outputStreamWriter.flush();
                 }
                 outputStreamWriter.close();
+                reader.close();
+                inputStream.close();
+
 
                 //       System.out.println(split);
                 //  System.out.println("before load");
                 //          this.buildDictionary(reader);
                 //              System.out.println("After build");
-                inputStream.close();
-                inputStreamReader.close();
-                reader.close();
-                //        System.out.println(split);
+
+
+
+
             }
         } catch (FileNotFoundException e) {
-            Log.e("login activity", "File not found: " + e.toString());
+            Log.d("writing on file", e.getMessage());
         } catch (NullPointerException e) {
-            System.out.println(e);
+            Log.d("writing on file", e.getMessage());
         }
         //    System.out.println("load dictionary is ok");
         catch (IOException e) {
-            System.out.println(e);
+            Log.d("writing on file", e.getMessage());
         }
 
 
@@ -118,7 +137,7 @@ public class Dictionary extends InputMethodService {
             int counter = 0;
 
             distance = Math.abs(word1.length() - word2.length());
-            if (distance >= 3) {
+            if (distance >= 4) {
                 return -1;
             }// check whether distance is grater than 3
 
@@ -129,7 +148,7 @@ public class Dictionary extends InputMethodService {
                     }
                     if (!word2.substring(counter, counter + 1).equals(var)) {
                         distance += 1;//distance increase by one
-                        if(distance>=3){return -1;}
+                        if(distance>=4){return -1;}
                     }
                     counter++;
 
@@ -142,7 +161,7 @@ public class Dictionary extends InputMethodService {
                     }
                     if (!word1.substring(counter, counter + 1).equals(var)) {
                         distance += 1;//distance increase by one
-                        if(distance>=3){return -1;}
+                        if(distance>=4){return -1;}
                     }
                     counter++;
                 }
@@ -165,11 +184,11 @@ public class Dictionary extends InputMethodService {
         this.wordListGenerator(word);
         Collections.shuffle(split);// make shuffle so that to gain different suggestion list
         for (String var : split) {
-            if (Math.min(returnList.size(), 4) == 4) { // check whether size is equal four
+            if (Math.min(returnList.size(), 6) == 4) { // check whether size is equal four
                 break;
             }
 
-            if (calculateDistance(word, var) != -1) {
+            if ((var.length()>1) && (calculateDistance(word, var) != -1) ) {
                 if (!returnList.contains(var)) {
                     returnList.add(var);
 
