@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.myapplication">
 
@@ -18,12 +17,12 @@
             <meta-data
                 android:name="android.view.im"
                 android:resource="@xml/method" />
-            <!--numeric id of resource assign to "android.view.im"-->
+            <!-- numeric id of resource assign to "android.view.im" -->
             <intent-filter>
-                <!--Specifies the types of intents that an activity,service, or broadcast receiver can respond-->
+
+                <!-- Specifies the types of intents that an activity,service, or broadcast receiver can respond -->
                 <action android:name="android.view.InputMethod" />
             </intent-filter>
-
         </service>
     </application>
 

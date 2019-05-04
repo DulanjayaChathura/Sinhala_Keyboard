@@ -9,9 +9,8 @@
     android:keyBackground="@color/colorPrimaryDark"
     android:id="@+id/sinhalaKeyboard"
     >
-
     <Row>
-        <Key android:codes="3540" android:keyLabel="ු" android:keyEdgeFlags="left"/>
+        <Key android:codes="3540" android:keyLabel="ු"  android:keyEdgeFlags="left"/>
         <Key android:codes="3461" android:keyLabel="අ"/>
         <Key android:codes="3536" android:keyLabel="ැ"/>
         <Key android:codes="3515" android:keyLabel="ර"/>

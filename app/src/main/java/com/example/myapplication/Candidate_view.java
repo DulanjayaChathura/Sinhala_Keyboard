@@ -136,6 +136,7 @@ public class Candidate_view extends View{
                 //          System.out.println("selected index : "+mSelectedIndex);
             }
 
+
         });
         setHorizontalFadingEdgeEnabled(true);
         setWillNotDraw(false);

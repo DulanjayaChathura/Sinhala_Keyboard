@@ -50,7 +50,7 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
     private InputMethodManager mInputMethodManager;
     private Candidate_view mCandidateView;
     private CompletionInfo[] mCompletions;
-  //  private WordProcessor wordProcessor= new WordProcessor();
+    //  private WordProcessor wordProcessor= new WordProcessor();
     private StringBuilder mComposing = new StringBuilder();
     private boolean mPredictionOn=true;
     private boolean mCompletionOn;
@@ -73,6 +73,7 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
     private boolean isScreenTouch;
     private int redundantLetter;
     private int[] redundancyList=new int[]{3540,3536,3530,3538,3535,3539,3571,3537,3542};
+    private static ExtractedText text;
 
 
 //    private PopUp popUp;
@@ -110,20 +111,19 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
 
 
 
-     return inputView;
+        return inputView;
     }
 
 
     @Override
     public void onRelease(int primaryCode){
-    //Called when the user releases a key.
+        //Called when the user releases a key.
     }
 
 
     /**
      * Called by the framework when your view for showing candidates needs to
      * be generated, like {@link #onCreateInputView}.
-
      **/
     /** keyboard test**/
 
@@ -131,7 +131,6 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
     public View onCreateCandidatesView() {
         mCandidateView = new Candidate_view(this);
         mCandidateView.setService(this);
-        mCandidateView.findViewById(R.id.word_LinearLayout);
         setCandidatesView(mCandidateView);
         setCandidatesViewShown(true);
         return mCandidateView;
@@ -176,11 +175,11 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
             mCandidateView.setSuggestions(suggestions, completions, typedWordValid);
         }
     }
-   void removeCurrentWord(){
-       getCurrentInputConnection().deleteSurroundingText(lengthBeforeCursor, lengthAfterCursor);
+    void removeCurrentWord(){
+        getCurrentInputConnection().deleteSurroundingText(lengthBeforeCursor, lengthAfterCursor);
 
 
-   }
+    }
 
     // Tap on suggestion to commit
     public void pickSuggestionManually(int index) {
@@ -270,10 +269,11 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
             InputConnection ic = getCurrentInputConnection();
             if (ic != null) {
                 ic.finishComposingText();
-          }
+            }
 
         }
-        mComposing.length();
+    //    System.out.println("onUpdateSelection ");
+     //   mComposing.length();
         getCurrentDetails();
         updateCandidates();
     }
@@ -287,20 +287,23 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
         String rightFirstWord="";
         StringBuilder currentWord = new StringBuilder("");
         int beforeLength = 0;
-        ExtractedText text = getCurrentInputConnection().getExtractedText(new ExtractedTextRequest(), 0);
+        try {
+        text = getCurrentInputConnection().getExtractedText(new ExtractedTextRequest(), 0);
+        }
+        catch(NullPointerException e){System.out.println(e);}
         if(text==null){return;}
         position = text.selectionStart;
         CharSequence enteredText = text.text.toString();
-//              System.out.println("position "+position);
-//        System.out.println("entered text "+enteredText.length());
+ //       System.out.println("position "+position);
+ //       System.out.println("entered text "+enteredText.length());
         if(position!=0){
-        leftPart = ((String) enteredText).substring(0, position).replaceAll("\\n", " ");
-        array = leftPart.split(" ");
-        if(!(array.length==0)){ leftLastWord=array[array.length-1];}
+            leftPart = ((String) enteredText).substring(0, position).replaceAll("\\n", " ");
+            array = leftPart.split(" ");
+            if(!(array.length==0)){ leftLastWord=array[array.length-1];}
         }
         if(!(enteredText.length()==position)){
-        rigthPart=((String) enteredText).substring(position,enteredText.length());
-           rightFirstWord=rigthPart.replaceAll("\\n", " ").split(" ")[0];
+            rigthPart=((String) enteredText).substring(position,enteredText.length());
+            rightFirstWord=rigthPart.replaceAll("\\n", " ").split(" ")[0];
         }
         beforeLength=position;
         if(!leftPart.endsWith(" ") && !rigthPart.startsWith(" ")){
@@ -332,6 +335,23 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
 //        System.out.println("lenght Berofecursor "+lengthBeforeCursor);
 //        System.out.println("lenght afterfecursor "+lengthAfterCursor);
 
+
+    }
+    @Override
+    public void onWindowShown(){
+  //      System.out.println("on Shown");
+        getCurrentDetails();
+        updateCandidates();
+
+
+
+    }
+    @Override
+    public void onWindowHidden(){
+  //      text.text="";
+        typedWord="";
+        updateCandidates();
+     //   System.out.println("on hidden");
 
     }
     private boolean reduceRedundancy(int primaryCode){
@@ -408,7 +428,7 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
                         list.add(typedWord);
                     }
 
-                   // System.out.println(this.list.toString());
+                    // System.out.println(this.list.toString());
 
                     setSuggestions(list, true, true);
 
@@ -418,7 +438,7 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
 
             }
             catch(NullPointerException e){
-            //    System.out.println(e);
+                //    System.out.println(e);
                 Log.d("updade candidate",e.getMessage());
             }catch(IOException e){
                 typedWord="";
@@ -452,7 +472,7 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
      */
 
     @Override public void onFinishInput() {
-      //  System.out.println("this is working");
+        //  System.out.println("this is working");
         super.onFinishInput();
 
         // Clear current composing text and candidates.
@@ -488,7 +508,7 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
 
 
         Keyboard currentKeyboard=inputView.getKeyboard();
-       if(type.equals("language")){
+        if(type.equals("language")){
             if (currentKeyboard==sinhalaKeyboard){
 
                 sinhalaKeyboard.setShifted(true);
@@ -516,56 +536,58 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
                 isCap=false;
 
 
+            }
         }
-      }
     }
-        /**
-         * this method change the type of the keyboard **/
+    /**
+     * this method change the type of the keyboard **/
 
 
     private void switchTo(){
-       if(type.equals("language")) {
-           type="symbol";
-           if (!isCap) {
-               inputView.setKeyboard(symbolKeyboard);
-           } else {
-               inputView.setKeyboard(symbolShiftKeyboard);
-           }
-       }else{
-           type="language";
-           if (!isCap) {
-               inputView.setKeyboard(sinhalaKeyboard);
-           } else {
-               inputView.setKeyboard(sinhalaKeyboardShift);
-           }
-       }
+        if(type.equals("language")) {
+            type="symbol";
+            if (!isCap) {
+                inputView.setKeyboard(symbolKeyboard);
+            } else {
+                inputView.setKeyboard(symbolShiftKeyboard);
+            }
+        }else{
+            type="language";
+            if (!isCap) {
+                inputView.setKeyboard(sinhalaKeyboard);
+            } else {
+                inputView.setKeyboard(sinhalaKeyboardShift);
+            }
+        }
     }
+
+
 
 
 
     @Override
     public void onText(CharSequence text) {
-    //sends a sequence of characters to the listener
+        //sends a sequence of characters to the listener
     }
 
     @Override
     public void swipeLeft() {
-    //Called when the user quickly moves the finger from right to left
+        //Called when the user quickly moves the finger from right to left
     }
 
     @Override
     public void swipeRight() {
-    //Called when the user quickly moves the finger from right to left
+        //Called when the user quickly moves the finger from right to left
     }
 
     @Override
     public void swipeDown() {
-    //Called when the user quickly moves the finger from up to down
+        //Called when the user quickly moves the finger from up to down
     }
 
     @Override
     public void swipeUp() {
-    //Called when the user quickly moves the finger from down to up.
+        //Called when the user quickly moves the finger from down to up.
     }
 
     public ArrayList<String> getList() {
