@@ -56,7 +56,7 @@ public class Candidate_view extends View{
     private boolean isUndo;
     private Snackbar snackbar;
     private CoordinatorLayout coordinatorLayout;
-    private String[] mWordSeparators="!1234567890 @#$%&*-=()!\"':;/?«~±×÷•°`´{}©£€^®¥_+[]¡<>¢|\\¿»".split("");
+    private String[] mWordSeparators="!1234567890 @#$%&*-=()!\"':;/?«~±×÷•°`´{}©£€^®¥_+[]¡<>¢|\\¿».,".split("");
 
 
     /**
@@ -117,19 +117,22 @@ public class Candidate_view extends View{
             }
             @Override
             public  void onLongPress (MotionEvent e) {
-                if(mSelectedIndex==0){
-                    String wrongWord=mService.getTypedWord();
-                   // System.out.println();
+                 String wrongWord=mService.getWrongWord();
+                if(mSelectedIndex==0 && wrongWord!=""){
+                    String wrongWo=wrongWord.split("\"")[1];
+                    System.out.println(wrongWo);
                     for (String i : mWordSeparators){
-                        if(i.length()!=0 && wrongWord.contains(i)){
+                        if(i.length()!=0 && wrongWo.contains(i)){
                             //      System.out.println("i value "+i.length());
-                            Toast toast=Toast.makeText(mService,wrongWord+" cannot be added into dictionary",Toast.LENGTH_SHORT);
+                            Toast toast=Toast.makeText(mService,wrongWo+" cannot be added into dictionary",Toast.LENGTH_SHORT);
                             toast.show();
                             return;}
                     }
-                    mService.writeNewWord(wrongWord);
-                    Toast toast=Toast.makeText(mService,wrongWord+" is added into dictionary",Toast.LENGTH_SHORT);
+                    mService.writeNewWord(wrongWo);
+                    Toast toast=Toast.makeText(mService,wrongWo+" is added into dictionary",Toast.LENGTH_SHORT);
                     toast.show();
+                    mService.getCurrentDetails();
+                    mService.updateCandidates();
 
                 }
                     //             System.out.println("press is work : " + mSuggestions.get(0).split("\"")[1]);

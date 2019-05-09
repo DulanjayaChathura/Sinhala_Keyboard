@@ -137,7 +137,7 @@ public class Dictionary extends InputMethodService {
             int counter = 0;
 
             distance = Math.abs(word1.length() - word2.length());
-            if (distance >= 4) {
+            if (distance >1) {
                 return -1;
             }// check whether distance is grater than 3
 
@@ -148,7 +148,7 @@ public class Dictionary extends InputMethodService {
                     }
                     if (!word2.substring(counter, counter + 1).equals(var)) {
                         distance += 1;//distance increase by one
-                        if(distance>=4){return -1;}
+                        if(distance>1){return -1;}
                     }
                     counter++;
 
@@ -161,11 +161,13 @@ public class Dictionary extends InputMethodService {
                     }
                     if (!word1.substring(counter, counter + 1).equals(var)) {
                         distance += 1;//distance increase by one
-                        if(distance>=4){return -1;}
+                        if(distance>1){return -1;}
                     }
                     counter++;
                 }
             }
+
+
 
         } catch (IndexOutOfBoundsException e) {
             System.out.println("calculated distance : " + e);
@@ -184,11 +186,12 @@ public class Dictionary extends InputMethodService {
         this.wordListGenerator(word);
         Collections.shuffle(split);// make shuffle so that to gain different suggestion list
         for (String var : split) {
-            if (Math.min(returnList.size(), 6) == 4) { // check whether size is equal four
+            if (Math.min(returnList.size(), 6) == 6) { // check whether size is equal four
                 break;
             }
-
-            if ((var.length()>1) && (calculateDistance(word, var) != -1) ) {
+           // int distance=calculateDistance(word, var);
+            if ((var.length()>1) && (calculateDistance(word, var)!= -1) ) {
+            //    System.out.println("word  " +word+" var "+var+" distance "+distance);
                 if (!returnList.contains(var)) {
                     returnList.add(var);
 

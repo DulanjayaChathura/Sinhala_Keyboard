@@ -44,6 +44,7 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
     private int lengthBeforeCursor=0;
     private int lengthAfterCursor=0;
     private int position;
+    private Keyboard currentKeyboard;
 
     /**keyboard  **/
 
@@ -74,7 +75,7 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
     private int redundantLetter;
     private int[] redundancyList=new int[]{3540,3536,3530,3538,3535,3539,3571,3537,3542};
     private static ExtractedText text;
-
+    private String wrongWord;
 
 //    private PopUp popUp;
 
@@ -277,11 +278,11 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
         getCurrentDetails();
         updateCandidates();
     }
-    private void getCurrentDetails(){
+    public void getCurrentDetails(){
         String leftPart="";
         String rigthPart="" ;
-        int countOfSpace;
-        CharSequence part;
+//        int countOfSpace;
+//        CharSequence part;
         String[] array;
         String leftLastWord="";
         String rightFirstWord="";
@@ -290,25 +291,30 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
         try {
         text = getCurrentInputConnection().getExtractedText(new ExtractedTextRequest(), 0);
         }
-        catch(NullPointerException e){System.out.println(e);}
+        catch(NullPointerException e){System.out.println(e);return ;}
         if(text==null){return;}
         position = text.selectionStart;
         CharSequence enteredText = text.text.toString();
  //       System.out.println("position "+position);
  //       System.out.println("entered text "+enteredText.length());
+        rigthPart=((String) enteredText).substring(position,enteredText.length());
         if(position!=0){
             leftPart = ((String) enteredText).substring(0, position).replaceAll("\\n", " ");
             array = leftPart.split(" ");
             if(!(array.length==0)){ leftLastWord=array[array.length-1];}
         }
         if(!(enteredText.length()==position)){
-            rigthPart=((String) enteredText).substring(position,enteredText.length());
-            rightFirstWord=rigthPart.replaceAll("\\n", " ").split(" ")[0];
+            array =rigthPart.replaceAll("\\n", " ").split(" ");
+            if(!(array.length==0)){ rightFirstWord=array[0];}
+//            System.out.println("position "+position);
+//            System.out.println("entered text "+enteredText.length());
+//            System.out.println("rigthPart length"+rigthPart.length());
+          //  rightFirstWord=rigthPart.replaceAll("\\n", " ").split(" ")[0];
         }
         beforeLength=position;
         if(!leftPart.endsWith(" ") && !rigthPart.startsWith(" ")){
 //            System.out.println("part 1");
-//            System.out.println("left part "+leftPart);
+//            System.out.println("left part "+rightFirstWord);
             beforeLength-=leftLastWord.length();
             currentWord=new StringBuilder(leftLastWord.concat(rightFirstWord));
 
@@ -325,7 +331,6 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
             lengthAfterCursor=position-beforeLength;
             lengthBeforeCursor=beforeLength+currentWord.length()-position;
         }
-
         typedWord=currentWord.toString();
 //        System.out.println("current word "+currentWord.toString());
 //        System.out.println("beforeLength "+beforeLength);
@@ -340,6 +345,13 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
     @Override
     public void onWindowShown(){
   //      System.out.println("on Shown");
+        currentKeyboard=inputView.getKeyboard();
+        if(currentKeyboard!=sinhalaKeyboard){
+            inputView.setKeyboard(sinhalaKeyboard);
+         //   System.out.println(" current keyboard "+currentKeyboard.toString());
+            currentKeyboard.setShifted(false);
+
+        }
         getCurrentDetails();
         updateCandidates();
 
@@ -349,8 +361,9 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
     @Override
     public void onWindowHidden(){
   //      text.text="";
-        typedWord="";
-        updateCandidates();
+          typedWord="";
+//        updateCandidates();
+
      //   System.out.println("on hidden");
 
     }
@@ -388,8 +401,8 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
      * text.  This will need to be filled in by however you are determining
      * candidates.
      */
-    private void updateCandidates() {
-
+    public void updateCandidates() {
+        wrongWord="";
         if(!(list==null)) {// other wise we cannot clear the Arraylist
             list.clear();// clear the entire word list
         }
@@ -408,8 +421,8 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
 
                     if(!suggestedList.isEmpty()){
                         if(!dictionary.isWordCorrect(typedWord) && typedWord.length()>1 ){
-
-                            list.add('"'+typedWord+'"');
+                            wrongWord='"'+typedWord+'"';
+                            list.add(wrongWord);
                         }else
                         { list.add(typedWord);
                         }if(suggestedList.contains(typedWord)) {
@@ -439,11 +452,11 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
             }
             catch(NullPointerException e){
                 //    System.out.println(e);
-                Log.d("updade candidate",e.getMessage());
+                Log.d("update candidate",e.getMessage());
             }catch(IOException e){
                 typedWord="";
                 updateCandidates();
-                Log.d("updade candidate",e.getMessage());
+                Log.d("update candidate",e.getMessage());
             }
 
 
@@ -507,7 +520,7 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
     private void handleShift(){// handle the shift key of the keybaord
 
 
-        Keyboard currentKeyboard=inputView.getKeyboard();
+        currentKeyboard=inputView.getKeyboard();
         if(type.equals("language")){
             if (currentKeyboard==sinhalaKeyboard){
 
@@ -547,24 +560,19 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
         if(type.equals("language")) {
             type="symbol";
             if (!isCap) {
-                inputView.setKeyboard(symbolKeyboard);
-            } else {
+                inputView.setKeyboard(symbolKeyboard); }
+            else{
                 inputView.setKeyboard(symbolShiftKeyboard);
             }
         }else{
             type="language";
             if (!isCap) {
-                inputView.setKeyboard(sinhalaKeyboard);
-            } else {
+                inputView.setKeyboard(sinhalaKeyboard); }
+            else{
                 inputView.setKeyboard(sinhalaKeyboardShift);
             }
         }
     }
-
-
-
-
-
     @Override
     public void onText(CharSequence text) {
         //sends a sequence of characters to the listener
@@ -596,5 +604,9 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
 
     public String getTypedWord() {
         return typedWord;
+    }
+
+    public String getWrongWord() {
+        return wrongWord;
     }
 }
