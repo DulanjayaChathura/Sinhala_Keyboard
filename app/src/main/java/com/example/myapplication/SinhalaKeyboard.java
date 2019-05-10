@@ -292,8 +292,9 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
         text = getCurrentInputConnection().getExtractedText(new ExtractedTextRequest(), 0);
         }
         catch(NullPointerException e){System.out.println(e);return ;}
-        if(text==null){return;}
+        if(text==null){typedWord="";return;}
         position = text.selectionStart;
+
         CharSequence enteredText = text.text.toString();
  //       System.out.println("position "+position);
  //       System.out.println("entered text "+enteredText.length());
