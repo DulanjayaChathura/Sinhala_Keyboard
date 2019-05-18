@@ -75,7 +75,7 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
     private int redundantLetter;
     private int[] redundancyList=new int[]{3540,3536,3530,3538,3535,3539,3571,3537,3542};
     private static ExtractedText text;
-    private String wrongWord;
+    private String wrongWord="";
 
 //    private PopUp popUp;
 
@@ -114,6 +114,7 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
 
         return inputView;
     }
+
 
 
     @Override
@@ -403,7 +404,6 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
      * candidates.
      */
     public void updateCandidates() {
-        wrongWord="";
         if(!(list==null)) {// other wise we cannot clear the Arraylist
             list.clear();// clear the entire word list
         }
@@ -608,6 +608,6 @@ public class SinhalaKeyboard extends InputMethodService implements KeyboardView.
     }
 
     public String getWrongWord() {
-        return wrongWord;
+        return list.get(0);
     }
 }

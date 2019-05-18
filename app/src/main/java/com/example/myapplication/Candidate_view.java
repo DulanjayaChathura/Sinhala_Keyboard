@@ -118,9 +118,11 @@ public class Candidate_view extends View{
             @Override
             public  void onLongPress (MotionEvent e) {
                  String wrongWord=mService.getWrongWord();
-                if(mSelectedIndex==0 && wrongWord!=""){
+
+     //           System.out.println("wrong word : "+wrongWord);
+                if(mSelectedIndex==0 && wrongWord.startsWith("\"") && wrongWord.endsWith("\"")){
                     String wrongWo=wrongWord.split("\"")[1];
-                    System.out.println(wrongWo);
+     //               System.out.println(wrongWo);
                     for (String i : mWordSeparators){
                         if(i.length()!=0 && wrongWo.contains(i)){
                             //      System.out.println("i value "+i.length());
