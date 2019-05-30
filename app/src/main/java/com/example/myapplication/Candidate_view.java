@@ -100,8 +100,7 @@ public class Candidate_view extends View{
         mGestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2,
-                                    float distanceX, float distanceY) {
-                //     System.out.println("GestureDetector is ok");
+                                    float distanceX, float distanceY) { // this is to detect scrolling
                 mScrolled = true;
                 int sx = getScrollX();// function
                 sx += distanceX;
@@ -117,13 +116,10 @@ public class Candidate_view extends View{
                 return true;
             }
             @Override
-            public  void onLongPress (MotionEvent e) {
+            public  void onLongPress (MotionEvent e) { // to listen the ong press
                  String wrongWord=mService.getWrongWord();
-
-     //           System.out.println("wrong word : "+wrongWord);
-                if(mSelectedIndex==0 && wrongWord.startsWith("\"") && wrongWord.endsWith("\"")){
+                if(mSelectedIndex==0 && wrongWord.startsWith("\"") && wrongWord.endsWith("\"")){ // this condition is to ensure that long press has been made on wrong word
                     String wrongWo=wrongWord.split("\"")[1];
-     //               System.out.println(wrongWo);
                     for (String i:firstLetter) {
                         if (wrongWo.substring(0,1).equals(i)) {
                             Toast toast = Toast.makeText(mService, wrongWo + " cannot be added into dictionary", Toast.LENGTH_SHORT);
@@ -156,12 +152,7 @@ public class Candidate_view extends View{
         setHorizontalScrollBarEnabled(false);
         setVerticalScrollBarEnabled(false);
     }
-//        public void createSnackbar(){
-//            coordinatorLayout=findViewById(R.id.coordinatorLayout);
-//            snackbar= Snackbar.make(coordinatorLayout,"word is added into dictionary",Snackbar.LENGTH_SHORT);
-//            snackbar.setAction("undo", mService.getmCandidateView());
-//
-//        }
+
     /**
      * A connection back to the service to communicate with the text field
      *
@@ -224,27 +215,18 @@ public class Candidate_view extends View{
         final boolean scrolled = mScrolled;
         final boolean typedWordValid = mTypedWordValid;
         final int y = (int) (((height - mPaint.getTextSize()) / 2) - mPaint.ascent());
-        //  System.out.println("scrolled : "+mScrolled);
         for (int i = 0; i < count; i++) {
             // Break the loop. This fix the app from crashing.
             if(i >= MAX_SUGGESTIONS){
                 break;
             }
             String suggestion = mSuggestions.get(i);// size of the suggetion list
-//            if(mSuggestions.size()==1){
-//          //      System.out.println("This line is ok ");
-//                mPaint.setColor(mColorSpecial);
-//            }else{mPaint.setColor(mColorNormal);}
-
             float textWidth = paint.measureText(suggestion);
             final int wordWidth = (int) textWidth + X_GAP * 2;
             //       mWordX[i] = x;// count the sum of the length (word1+ word2) 200 line
             mWordWidth[i] = wordWidth;// entire word i width
             //   paint.setColor(mColorNormal);
             if (touchX + scrollX >= x && touchX + scrollX < x + wordWidth && !scrolled) {
-//                System.out.println("Scrolled lsength :" +scrollX);
-//                System.out.println("touchX :" +touchX);
-//                System.out.println("scrolled :" +scrolled);
                 if (canvas != null) {
                     canvas.translate(x, 0);
                     mSelectionHighlight.setBounds(0, bgPadding.top, wordWidth, height);
@@ -254,16 +236,7 @@ public class Candidate_view extends View{
                 mSelectedIndex = i;
             }
             if (canvas != null) {
-//                if ((i == 1 && !typedWordValid) || (i == 0 && typedWordValid)) {
-//                    paint.setFakeBoldText(true);
-//                    paint.setColor(mColorRecommended);
-//                } else if (i != 0) {
-//                    paint.setColor(mColorOther);
-//                }
-
                 canvas.drawText(suggestion, x + X_GAP, y, paint);
-                //              paint.setColor(mColorOther);
-                // draw the horizontal lines
                 canvas.drawLine(x + wordWidth + .5f, bgPadding.top,
                         x + wordWidth + .5f, height + 1, paint);
                 paint.setFakeBoldText(false);
@@ -326,7 +299,7 @@ public class Candidate_view extends View{
         if (mGestureDetector.onTouchEvent(me)) {
             return true;
         }
-        // System.out.println("touch is working");
+
 
         int action = me.getAction();
         int x = (int) me.getX();
@@ -341,7 +314,6 @@ public class Candidate_view extends View{
                 if (y <= 0) {
                     // Fling up!?
                     if (mSelectedIndex >0) {//we need to take the index of touched word
-                        //   System.out.println("Index : "+mSelectedIndex);
                         mService.pickSuggestionManually(mSelectedIndex);
 
                         mSelectedIndex = -1;

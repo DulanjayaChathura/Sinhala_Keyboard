@@ -69,14 +69,7 @@ public class DictionaryTest {
 
 
     }
-    @Test
-    public void getWordList(){
-        ArrayList<String> output;
-      //  String value="ගැල";
-        output=dictionary.returnWordList();
-        assertEquals(output,new ArrayList<String>(){{add("ගමන");add("ගත");add("ගමරාළ");}});
 
-    }
 
 
 }

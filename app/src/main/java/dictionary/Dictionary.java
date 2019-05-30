@@ -24,10 +24,6 @@ public class Dictionary extends InputMethodService {
     private ArrayList<String> word2_character=new ArrayList<String>();
     private InputStream inputStream;
     private ArrayList<String> returnList = new ArrayList<String>();
-//    private String privoisLength;
-//    private String currentLenght;
-//    private boolean cLenLargeThanpLen;
-//    private Hashtable<String,Integer> calculatedWord= new Hashtable<String,Integer>();// add the calculated words to increase the performance of the project
 
     public ArrayList<String> wordListGenerator(String word) {
 
@@ -45,23 +41,16 @@ public class Dictionary extends InputMethodService {
             while ((line = bufferedReader.readLine()) != null) {
                 String[] splitLine = line.split(" ");
 
-                //Collections.addAll(split, splitLine);// adding two arrays
                 for (String var : splitLine) {
                     split.add(var);
 
-//                    if (!(var.equals("")|var.contains(" ") )){
-//                        //                 System.out.println("word generator : "+var);
-//                        split.add(var);
-//                    }
+
 
                 }
             }
             inputStream.close();
             inputStreamReader.close();
             bufferedReader.close();
-         //   System.out.println("split "+split.get(0).length());
-         //   System.out.println("split "+split.size());
-
 
         } catch (FileNotFoundException e) {
             Log.d("wordListGenerator", e.getMessage());
@@ -75,15 +64,10 @@ public class Dictionary extends InputMethodService {
     }
 
     private void writeOnFile(String fileName) {
-        //System.out.println("warning here");
         InputStreamReader inputStreamReader;
         BufferedReader reader;
         OutputStreamWriter outputStreamWriter;
         try {
-//            if(split.contains(" ")){
-//                System.out.println("there is space");
-//            }
-
             if (inputStream != null) {
                 String line;
                 inputStreamReader = new InputStreamReader(inputStream);
@@ -92,20 +76,16 @@ public class Dictionary extends InputMethodService {
                    if((fileName+".txt").equals(var)){return;}
                 }
 
-           //     System.out.println(con);
                 outputStreamWriter= new OutputStreamWriter(context.openFileOutput(fileName + ".txt", context.MODE_APPEND));
                 while ((line = reader.readLine()) != null) {
                     String[] splitLine = line.split(" ");
 
-                    //Collections.addAll(split, splitLine);// adding two arrays
                     for (String var : splitLine) {
                         if (!var.equals("")) {
-                            //          System.out.println(var);
                             outputStreamWriter.write((var + " "));
                         }
 
                     }
-                    //  Log.d("writeOnFile","this is !!!!!!!!! ok");
                             outputStreamWriter.write('\n');
                             outputStreamWriter.flush();
                 }
@@ -113,11 +93,6 @@ public class Dictionary extends InputMethodService {
                 reader.close();
                 inputStream.close();
 
-
-                //       System.out.println(split);
-                //  System.out.println("before load");
-                //          this.buildDictionary(reader);
-                //              System.out.println("After build");
 
 
 
@@ -187,26 +162,20 @@ public class Dictionary extends InputMethodService {
         int counter = 0;
         String nextWord = "";
         returnList.clear();// we clear the return list
-//        Instant start = Instant.now();
         wordGenerationList=wordListGenerator(word);
         Collections.shuffle(wordGenerationList);// make shuffle so that to gain different suggestion list
         for (String var : wordGenerationList) {
             if (Math.min(returnList.size(), 6) == 6) { // check whether size is equal four
                 break;
             }
-           // int distance=calculateDistance(word, var);
             if ((var.length()>1) && var.contains(word)&& (calculateDistance(word, var)!= -1) ) {
-            //    System.out.println("word  " +word+" var "+var+" distance "+distance);
                 if (!returnList.contains(var)) {
                     returnList.add(var);
 
                 }
             }
         }
-    //    System.out.println("calculated word list "+returnList);
-   //     Instant end = Instant.now();
-   //     Duration timeElapsed = Duration.between(start, end);
-    //    System.out.println("article size , Time taken: "+ "("+ split.size()+","+timeElapsed +")");
+
         return returnList;
     }
 
@@ -216,8 +185,6 @@ public class Dictionary extends InputMethodService {
         return calculateWord(word);
     }
     public boolean isWordCorrect(String word) {
-     //   System.out.println("isWordCorrect "+split);
-     //   System.out.println("isWordCorrect "+split.contains(word) + "word is "+word );
         if(split.contains(word)){
             return true;
         } else {
@@ -226,15 +193,13 @@ public class Dictionary extends InputMethodService {
 
     }
 
-    public void writeNewWord(String word) {
+    public void writeNewWord(String word) { //write new word on dictionary
         String fileName = word.substring(0, 1);
-     //   System.out.println("writeNewWord: " + fileName + " : " + word);
         try {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput(fileName + ".txt", context.MODE_APPEND));
             outputStreamWriter.write(word + " ");
             outputStreamWriter.flush();
             outputStreamWriter.close();
-            // System.out.print("After writing");
         } catch (FileNotFoundException e) {
             Log.d("writeNewWord", e.getMessage());
         } catch (IOException e) {
@@ -242,7 +207,5 @@ public class Dictionary extends InputMethodService {
         }
 
     }
-    public ArrayList<String> returnWordList() {
-        return new ArrayList<String>(){{add("ගමන");add("ගත");add("ගමරාළ");}};
-    }
+
 }

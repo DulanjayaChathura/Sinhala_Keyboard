@@ -48,25 +48,14 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
     private Keyboard currentKeyboard;
 
     /**keyboard  **/
-
-    private InputMethodManager mInputMethodManager;
+    
     private Candidate_view mCandidateView;
-    private CompletionInfo[] mCompletions;
-    //  private WordProcessor wordProcessor= new WordProcessor();
     private StringBuilder mComposing = new StringBuilder();
-    private boolean mPredictionOn=true;
-    private boolean mSound;
-    private int mLastDisplayWidth;
-    private boolean mCapsLock;
-    private long mLastShiftTime;
-    private long mMetaState;
-    private String mWordSeparators;
+    private String wordSeparators;
     private ArrayList<String> list ;
     private String typedWord="";
-    private boolean isWordValid=true;
     private boolean isSuggetionListEmplty;
     private ArrayList<String> suggestedList;
-    private Snackbar snackbar;
     private CoordinatorLayout coordinatorLayout;
     private Button button;
     private boolean isPressedUndo;
@@ -77,7 +66,6 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
     private static ExtractedText text;
     private String wrongWord="";
 
-//    private PopUp popUp;
 
 
     /**keyboard  **/
@@ -125,62 +113,24 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
     }
 
 
-    /**
-     * Called by the framework when your view for showing candidates needs to
-     * be generated, like {@link #onCreateInputView}.
-     **/
-    /** keyboard test**/
 
     @Override
-    public View onCreateCandidatesView() {
+    public View onCreateCandidatesView() { // to create candidate view
         mCandidateView = new Candidate_view(this);
         mCandidateView.setService(this);
         setCandidatesView(mCandidateView);
         setCandidatesViewShown(true);
         return mCandidateView;
     }
-
-
-    /**
-     * This tells us about completions that the editor has determined based
-     * on the current text in it.  We want to use this in fullscreen mode
-     * to show the completions ourselves, since the editor can not be seen
-     * in that situation.
-     */
-//    @Override
-//    public void onDisplayCompletions(CompletionInfo[] completions) {
-//        if (mCompletionOn) {
-//            mCompletions = completions;
-//            if (completions == null) {
-//                setSuggestions(null, false, false);
-//                return;
-//            }
-//
-//            List<String> stringList = new ArrayList<>();
-//            for (CompletionInfo ci : completions) {
-//                if (ci != null) stringList.add(ci.getText().toString());
-//            }
-//            setSuggestions(stringList, true, true);
-//        }
-//
-//    }
-
-
-
+    
     public void setSuggestions(List<String> suggestions, boolean completions,
                                boolean typedWordValid) {
-        //completions whether word is  completed
-//        if (suggestions != null && suggestions.size() > 0) {
-//
-//        } else if (isExtractViewShown()) {
-//            setCandidatesViewShown(true);
-//        }
         if (mCandidateView!= null) {
 
             mCandidateView.setSuggestions(suggestions, completions, typedWordValid);
         }
     }
-    public void removeCurrentWord(){
+    public void removeCurrentWord(){ // remove current word from the text field
         getCurrentInputConnection().deleteSurroundingText(lengthBeforeCursor, lengthAfterCursor);
 
 
@@ -199,34 +149,7 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
 
         }
     }
-
-//    private boolean translateKeyDown(int keyCode, KeyEvent event) {
-//        mMetaState = MetaKeyKeyListener.handleKeyDown(mMetaState,
-//                keyCode, event);
-//        int c = event.getUnicodeChar(MetaKeyKeyListener.getMetaState(mMetaState));
-//        mMetaState = MetaKeyKeyListener.adjustMetaAfterKeypress(mMetaState);
-//        InputConnection ic = getCurrentInputConnection();
-//        if (c == 0 || ic == null) {
-//            return false;
-//        }
-//
-//        if ((c & KeyCharacterMap.COMBINING_ACCENT) != 0) {
-//            c = c & KeyCharacterMap.COMBINING_ACCENT_MASK;
-//        }
-//
-//        if (mComposing.length() > 0) {
-//            char accent = mComposing.charAt(mComposing.length() - 1);
-//            int composed = KeyEvent.getDeadChar(accent, c);
-//            if (composed != 0) {
-//                c = composed;
-//                mComposing.setLength(mComposing.length() - 1);
-//            }
-//        }
-//
-//        onKey(c, null);
-//
-//        return true;
-//    }
+    
 
     @Override
     public void onPress(int primaryCode) {// over write method
@@ -241,17 +164,12 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
     }
 
 
-    /**
-     * Helper function to commit any text being composed in to the editor.
-     */
-
-
     private String getWordSeparators() {
-        mWordSeparators="!1234567890 @#$%&*-=()!\"':;/?«~±×÷•°`´{}©£€^®¥_+[]¡<>¢|\\¿».,";
-        return mWordSeparators;
+        wordSeparators="!1234567890 @#$%&*-=()!\"':;/?«~±×÷•°`´{}©£€^®¥_+[]¡<>¢|\\¿».,";
+        return wordSeparators;
     }
 
-    public boolean isWordSeparator(int code) {
+    public boolean isWordSeparator(int code) { // check whether a letter is a word separator
         String separators = getWordSeparators();
         return separators.contains(String.valueOf((char)code));
     }
@@ -284,26 +202,22 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
         getCurrentDetails();
         updateCandidates();
     }
-    public void getCurrentDetails(){
-        String leftPart="";
-        String rigthPart="" ;
-//        int countOfSpace;
-//        CharSequence part;
+    public void getCurrentDetails(){// this method used to get the current detail about the text
+        String leftPart=""; // left part before the cursor
+        String rigthPart="" ;// right part after the cursor
         String[] array;
         String leftLastWord="";
         String rightFirstWord="";
-        StringBuilder currentWord = new StringBuilder("");
-        int beforeLength = 0;
+        StringBuilder currentWord = new StringBuilder("");// current word on which cursor is
+        int beforeLength = 0;// distance to cursor position from the start of the text area
         try {
-        text = getCurrentInputConnection().getExtractedText(new ExtractedTextRequest(), 0);
+        text = getCurrentInputConnection().getExtractedText(new ExtractedTextRequest(), 0);//  extract current text area
         }
         catch(NullPointerException e){System.out.println(e);return ;}
         if(text==null){typedWord="";return;}
-        position = text.selectionStart;
+        position = text.selectionStart;// calculate the cursor position
 
         CharSequence enteredText = text.text.toString();
- //       System.out.println("position "+position);
- //       System.out.println("entered text "+enteredText.length());
         rigthPart=((String) enteredText).substring(position,enteredText.length());
         if(position!=0){
             leftPart = ((String) enteredText).substring(0, position).replaceAll("\\n", " ");
@@ -313,21 +227,14 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
         if(!(enteredText.length()==position)){
             array =rigthPart.replaceAll("\\n", " ").split(" ");
             if(!(array.length==0)){ rightFirstWord=array[0];}
-//            System.out.println("position "+position);
-//            System.out.println("entered text "+enteredText.length());
-//            System.out.println("rigthPart length"+rigthPart.length());
-//            rightFirstWord=rigthPart.replaceAll("\\n", " ").split(" ")[0];
         }
         beforeLength=position;
         if(!leftPart.endsWith(" ") && !rigthPart.startsWith(" ")){
-//            System.out.println("part 1");
-//            System.out.println("left part "+rightFirstWord);
             beforeLength-=leftLastWord.length();
             currentWord=new StringBuilder(leftLastWord.concat(rightFirstWord));
 
         }
         else if(leftPart.endsWith(" ") && !rigthPart.startsWith(" ")){
-//            System.out.println("part 2");
             currentWord=new StringBuilder(rightFirstWord);
 
         }
@@ -339,23 +246,15 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
             lengthBeforeCursor=beforeLength+currentWord.length()-position;
         }
         typedWord=currentWord.toString();
-//        System.out.println("current word "+currentWord.toString());
-//        System.out.println("beforeLength "+beforeLength);
-//        System.out.println("rightFirstWord "+rightFirstWord);
-//        System.out.println("leftFirstWord "+leftLastWord);
-//        System.out.println("curren word length "+currentWord.length());
-//        System.out.println("lenght Berofecursor "+lengthBeforeCursor);
-//        System.out.println("lenght afterfecursor "+lengthAfterCursor);
+
 
 
     }
     @Override
-    public void onWindowShown(){
-        //    System.out.println("on Shown");
+    public void onWindowShown(){  // this method is called when keyboard appears after hiddenning
         currentKeyboard=inputView.getKeyboard();
         if(currentKeyboard!=sinhalaKeyboard){
             inputView.setKeyboard(sinhalaKeyboard);
-         //   System.out.println(" current keyboard "+currentKeyboard.toString());
             currentKeyboard.setShifted(false);
 
         }
@@ -366,7 +265,7 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
 
     }
     @Override
-    public void onWindowHidden(){
+    public void onWindowHidden(){ // this method is called when home button is pressed
           typedWord="";
 
 
@@ -383,7 +282,7 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
         return false;
     }
 
-    private void handleCharacter(int primaryCode, int[] keyCodes) {
+    private void handleCharacter(int primaryCode, int[] keyCodes) { // handle input given by user
         if(reduceRedundancy(primaryCode)){return;}// redeuce reducndancy
         mComposing.append((char) primaryCode);// create string builder
         getCurrentInputConnection().commitText(mComposing, 1);
@@ -400,11 +299,7 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
 
 
 
-    /**
-     * Update the list of available candidates from the current composing
-     * text.  This will need to be filled in by however you are determining
-     * candidates.
-     */
+
     public ArrayList<String> getWordListFromArticle(String currentWord){
         try {
             InputStream inputStream;
@@ -479,7 +374,7 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
         return true;
 
     }
-    public void writeNewWord(String word){
+    public void writeNewWord(String word){ // write new word on dictionary
         dictionary.writeNewWord(word);
 
     }
@@ -498,7 +393,6 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
      */
 
     @Override public void onFinishInput() {
-        //  System.out.println("this is working");
         super.onFinishInput();
 
         // Clear current composing text and candidates.
@@ -508,7 +402,7 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
     }
     /** keyboard test**/
     @Override
-    public void onKey(int primaryCode, int[] keyCodes) {
+    public void onKey(int primaryCode, int[] keyCodes) { // when user press on a key this the method come into play
         InputConnection ic=getCurrentInputConnection();
         switch(primaryCode) {
             case Keyboard.KEYCODE_DELETE:
@@ -569,7 +463,7 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
      * this method change the type of the keyboard **/
 
 
-    private void switchTo(){
+    private void switchTo(){ // keyboard switch language to symbol and vise versa
         if(type.equals("language")) {
             type="symbol";
             if (!isCap) {
