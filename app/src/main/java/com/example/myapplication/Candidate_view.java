@@ -57,6 +57,7 @@ public class Candidate_view extends View{
     private Snackbar snackbar;
     private CoordinatorLayout coordinatorLayout;
     private String[] mWordSeparators="!1234567890 @#$%&*-=()!\"':;/?«~±×÷•°`´{}©£€^®¥_+[]¡<>¢|\\¿».,".split("");
+    private String[] firstLetter="ැෑිීුූෘ්ාෙෳෘං".split("");
 
 
     /**
@@ -102,12 +103,12 @@ public class Candidate_view extends View{
                                     float distanceX, float distanceY) {
                 //     System.out.println("GestureDetector is ok");
                 mScrolled = true;
-                int sx = getScrollX();
+                int sx = getScrollX();// function
                 sx += distanceX;
                 if (sx < 0) {
                     sx = 0;
                 }
-                if (sx + getWidth() > mTotalWidth) {
+                if (sx + getWidth() > mTotalWidth) { //getwidth width of the visible candidate view
                     sx -= distanceX;
                 }
                 mTargetScrollX = sx;
@@ -123,6 +124,13 @@ public class Candidate_view extends View{
                 if(mSelectedIndex==0 && wrongWord.startsWith("\"") && wrongWord.endsWith("\"")){
                     String wrongWo=wrongWord.split("\"")[1];
      //               System.out.println(wrongWo);
+                    for (String i:firstLetter) {
+                        if (wrongWo.substring(0,1).equals(i)) {
+                            Toast toast = Toast.makeText(mService, wrongWo + " cannot be added into dictionary", Toast.LENGTH_SHORT);
+                            toast.show();
+                            return;
+                        }
+                    }
                     for (String i : mWordSeparators){
                         if(i.length()!=0 && wrongWo.contains(i)){
                             //      System.out.println("i value "+i.length());
@@ -134,7 +142,7 @@ public class Candidate_view extends View{
                     Toast toast=Toast.makeText(mService,wrongWo+" is added into dictionary",Toast.LENGTH_SHORT);
                     toast.show();
                     mService.getCurrentDetails();
-                    mService.updateCandidates();
+                    mService.updateCandidates();// edited
 
                 }
                     //             System.out.println("press is work : " + mSuggestions.get(0).split("\"")[1]);
@@ -173,7 +181,7 @@ public class Candidate_view extends View{
     }
     // handle the draw layout
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) { // fixes the measurement
         int measuredWidth = resolveSize(50, widthMeasureSpec);
 
         // Get the desired height of the icon menu view (last row of items does
@@ -200,7 +208,7 @@ public class Candidate_view extends View{
         mTotalWidth = 0;
         if (mSuggestions == null) return;
 
-        if (mBgPadding == null) {
+        if (mBgPadding == null) { //mBgPadding is also a rectangular
             mBgPadding = new Rect(0, 0, 0, 0);
             if (getBackground() != null) {
                 getBackground().getPadding(mBgPadding);// get the rectangle
@@ -349,7 +357,7 @@ public class Candidate_view extends View{
                 }
                 mSelectedIndex = -1;
                 removeHighlight();
-                requestLayout();
+                requestLayout();// request to new layout
                 break;
         }
         return true;

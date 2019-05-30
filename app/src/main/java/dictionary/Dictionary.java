@@ -10,13 +10,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 
 
 public class Dictionary extends InputMethodService {
     private Context context;
-    private ArrayList<String> split=new ArrayList<String>();
+    public ArrayList<String> split=new ArrayList<String>();
+    public ArrayList<String> wordGenerationList=new ArrayList<>();
     private ArrayList<String> word1_character=new ArrayList<String>();
     private ArrayList<String> word2_character=new ArrayList<String>();
     private InputStream inputStream;
@@ -26,7 +29,7 @@ public class Dictionary extends InputMethodService {
 //    private boolean cLenLargeThanpLen;
 //    private Hashtable<String,Integer> calculatedWord= new Hashtable<String,Integer>();// add the calculated words to increase the performance of the project
 
-    private void wordListGenerator(String word) {
+    public ArrayList<String> wordListGenerator(String word) {
 
         word1_character.clear();
         word2_character.clear();
@@ -62,11 +65,13 @@ public class Dictionary extends InputMethodService {
 
         } catch (FileNotFoundException e) {
             Log.d("wordListGenerator", e.getMessage());
+
         } catch (IOException e) {
             Log.d("wordListGenerator", e.getMessage());
+
         }
 
-
+        return split;
     }
 
     private void writeOnFile(String fileName) {
@@ -82,7 +87,7 @@ public class Dictionary extends InputMethodService {
             if (inputStream != null) {
                 String line;
                 inputStreamReader = new InputStreamReader(inputStream);
-                reader = new BufferedReader(inputStreamReader,20000);
+                reader = new BufferedReader(inputStreamReader,1000000);
                 for(String var: context.fileList()){
                    if((fileName+".txt").equals(var)){return;}
                 }
@@ -131,13 +136,13 @@ public class Dictionary extends InputMethodService {
 
     }
 
-    private int calculateDistance(String word1, String word2) {
+    public int  calculateDistance(String word1, String word2) {
         int distance = 0;//distance between words
         try {
             int counter = 0;
 
             distance = Math.abs(word1.length() - word2.length());
-            if (distance >1) {
+            if (distance >3) {
                 return -1;
             }// check whether distance is grater than 3
 
@@ -148,7 +153,7 @@ public class Dictionary extends InputMethodService {
                     }
                     if (!word2.substring(counter, counter + 1).equals(var)) {
                         distance += 1;//distance increase by one
-                        if(distance>1){return -1;}
+                        if(distance>3){return -1;}
                     }
                     counter++;
 
@@ -161,7 +166,7 @@ public class Dictionary extends InputMethodService {
                     }
                     if (!word1.substring(counter, counter + 1).equals(var)) {
                         distance += 1;//distance increase by one
-                        if(distance>1){return -1;}
+                        if(distance>3){return -1;}
                     }
                     counter++;
                 }
@@ -178,19 +183,19 @@ public class Dictionary extends InputMethodService {
     }
 
 
-    private ArrayList<String> calculateWord(String word) {
+    public ArrayList<String> calculateWord(String word) {
         int counter = 0;
         String nextWord = "";
         returnList.clear();// we clear the return list
-
-        this.wordListGenerator(word);
-        Collections.shuffle(split);// make shuffle so that to gain different suggestion list
-        for (String var : split) {
+//        Instant start = Instant.now();
+        wordGenerationList=wordListGenerator(word);
+        Collections.shuffle(wordGenerationList);// make shuffle so that to gain different suggestion list
+        for (String var : wordGenerationList) {
             if (Math.min(returnList.size(), 6) == 6) { // check whether size is equal four
                 break;
             }
            // int distance=calculateDistance(word, var);
-            if ((var.length()>1) && (calculateDistance(word, var)!= -1) ) {
+            if ((var.length()>1) && var.contains(word)&& (calculateDistance(word, var)!= -1) ) {
             //    System.out.println("word  " +word+" var "+var+" distance "+distance);
                 if (!returnList.contains(var)) {
                     returnList.add(var);
@@ -199,6 +204,9 @@ public class Dictionary extends InputMethodService {
             }
         }
     //    System.out.println("calculated word list "+returnList);
+   //     Instant end = Instant.now();
+   //     Duration timeElapsed = Duration.between(start, end);
+    //    System.out.println("article size , Time taken: "+ "("+ split.size()+","+timeElapsed +")");
         return returnList;
     }
 
@@ -210,7 +218,7 @@ public class Dictionary extends InputMethodService {
     public boolean isWordCorrect(String word) {
      //   System.out.println("isWordCorrect "+split);
      //   System.out.println("isWordCorrect "+split.contains(word) + "word is "+word );
-        if (split.contains(word)) {
+        if(split.contains(word)){
             return true;
         } else {
             return false;
@@ -233,5 +241,8 @@ public class Dictionary extends InputMethodService {
             Log.d("writeNewWord", e.getMessage());
         }
 
+    }
+    public ArrayList<String> returnWordList() {
+        return new ArrayList<String>(){{add("ගමන");add("ගත");add("ගමරාළ");}};
     }
 }

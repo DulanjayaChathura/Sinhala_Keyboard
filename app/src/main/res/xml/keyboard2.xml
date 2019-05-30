@@ -10,38 +10,38 @@
     >
 
     <Row>
-        <Key android:codes="3542" android:keyLabel="ූ" android:keyEdgeFlags="left"/>
-        <Key android:codes="3467" android:keyLabel="උ"/>
-        <Key android:codes="3537" android:keyLabel="ෑ"/>
-        <Key android:codes="3469" android:keyLabel="ඍ"/>
-        <Key android:codes="3476" android:keyLabel="ඔ"/>
-        <Key android:codes="3521" android:keyLabel="ශ"/>
-        <Key android:codes="3513" android:keyLabel="ඹ" />
-        <Key android:codes="3522" android:keyLabel="ෂ"/>
-        <Key android:codes="3507" android:keyLabel="ඳ"/>
-        <Key android:codes="3489" android:keyLabel="ඡ" android:keyEdgeFlags="right"/>
+        <Key android:codes="3542" android:keyLabel="\u0DD6" android:keyEdgeFlags="left"/>
+        <Key android:codes="3467" android:keyLabel="\u0D8B"/>
+        <Key android:codes="3537" android:keyLabel="\u0DD1"/>
+        <Key android:codes="3469" android:keyLabel="\u0D8D"/>
+        <Key android:codes="3476" android:keyLabel="\u0D94"/>
+        <Key android:codes="3521" android:keyLabel="\u0DC1"/>
+        <Key android:codes="3513" android:keyLabel="\u0DB9" />
+        <Key android:codes="3522" android:keyLabel="\u0DC2"/>
+        <Key android:codes="3507" android:keyLabel="\u0DB3"/>
+        <Key android:codes="3489" android:keyLabel="\u0DA1" android:keyEdgeFlags="right"/>
     </Row>
     <Row>
-        <Key android:codes="3571" android:keyLabel="ෳ" android:keyEdgeFlags="left"/>
-        <Key android:codes="3539" android:keyLabel="ී"/>
-        <Key android:codes="3544" android:keyLabel="ෘ"/>
-        <Key android:codes="3511" android:keyLabel="භ"/>
-        <Key android:codes="3496" android:keyLabel="ඨ"/>
-        <Key android:codes="3500" android:keyLabel="ඬ"/>
-        <Key android:codes="3499" android:keyLabel="ණ"/>
-        <Key android:codes="3483" android:keyLabel="ඛ"/>
-        <Key android:codes="3502" android:keyLabel="ථ" />
-        <Key android:codes="3526" android:keyLabel="ෆ" android:keyEdgeFlags="right"/>
+        <Key android:codes="3571" android:keyLabel="\u0DDF" android:keyEdgeFlags="left"/>
+        <Key android:codes="3539" android:keyLabel="\u0DD3"/>
+        <Key android:codes="3544" android:keyLabel="\u0DD8"/>
+        <Key android:codes="3511" android:keyLabel="\u0DB7"/>
+        <Key android:codes="3496" android:keyLabel="\u0DA8"/>
+        <Key android:codes="3500" android:keyLabel="\u0DAC"/>
+        <Key android:codes="3499" android:keyLabel="\u0DAB"/>
+        <Key android:codes="3483" android:keyLabel="\u0D9B"/>
+        <Key android:codes="3502" android:keyLabel="\u0DAE" />
+        <Key android:codes="3526" android:keyLabel="\u0DC6" android:keyEdgeFlags="right"/>
     </Row>
     <Row>
-        <Key android:codes="3504" android:keyLabel="ධ"/>
-        <Key android:codes="3491" android:keyLabel="ඣ"/>
-        <Key android:codes="3498" android:keyLabel="ඪ"/>
-        <Key android:codes="3466" android:keyLabel="ඊ"/>
-        <Key android:codes="3511" android:keyLabel="භ"/>
-        <Key android:codes="3509" android:keyLabel="ඵ"/>
-        <Key android:codes="3525" android:keyLabel="ළ"/>
-        <Key android:codes="3485" android:keyLabel="ඝ"/>
+        <Key android:codes="3504" android:keyLabel="\u0DB0"/>
+        <Key android:codes="3491" android:keyLabel="\u0DA3"/>
+        <Key android:codes="3498" android:keyLabel="\u0DAA"/>
+        <Key android:codes="3466" android:keyLabel="\u0D8A"/>
+        <Key android:codes="3511" android:keyLabel="\u0DB7"/>
+        <Key android:codes="3509" android:keyLabel="\u0DB5"/>
+        <Key android:codes="3525" android:keyLabel="\u0DC5"/>
+        <Key android:codes="3485" android:keyLabel="\u0D9D"/>
         <Key android:codes="-5" android:keyIcon="@drawable/ic_backspace" android:keyWidth="20%p" android:isRepeatable="true" android:keyEdgeFlags="right"/>
     </Row>
     <Row android:rowEdgeFlags="bottom">
