@@ -1,39 +1,38 @@
 package com.example.myapplication;
 
-import android.support.test.espresso.Espresso;
-import android.support.test.runner.AndroidJUnit4;
 
-import org.junit.After;
+import android.content.Context;
+import android.inputmethodservice.KeyboardView;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
+import android.util.Log;
+
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.matcher.ViewMatchers.hasImeAction;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
+
 import static org.junit.Assert.*;
 
+@RunWith(AndroidJUnit4.class)
 public class SinhalaKeyboardTest {
-    SinhalaKeyboard sinhalaKeyboard=new SinhalaKeyboard();
+    Context context=InstrumentationRegistry.getTargetContext();
+    SinhalaKeyboard keyboard=new SinhalaKeyboard();
 
+    @Test
+    public void useContext(){
+        assertEquals("com.example.myapplication",context.getPackageName());
 
-//
-//    @Before
-//    public void setUp() throws Exception {
-//    }
-//    @Test
-//    public void testLaunch()
-//    {
-//        Espresso.onView(withId(R.id.sinhalaKeyboard));
-//        Espresso.closeSoftKeyboard();
-//
-//
-//
-//    }
-//    @After
-//    public void tearDown() throws Exception {
-//    }
+    }
 
+    @Test
+    public void testHandleBackSpace(){
+
+        keyboard.handleBackspace();
+    }
+    @Test
+    public void testHandleShift(){
+        keyboard.handleShift();
+    }
 
 }

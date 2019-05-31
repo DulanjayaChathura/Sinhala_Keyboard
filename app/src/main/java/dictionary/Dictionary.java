@@ -63,7 +63,7 @@ public class Dictionary extends InputMethodService {
         return split;
     }
 
-    private void writeOnFile(String fileName) {
+    private void writeOnFile(String fileName) { // write txt file on device storage
         InputStreamReader inputStreamReader;
         BufferedReader reader;
         OutputStreamWriter outputStreamWriter;
@@ -73,7 +73,7 @@ public class Dictionary extends InputMethodService {
                 inputStreamReader = new InputStreamReader(inputStream);
                 reader = new BufferedReader(inputStreamReader,1000000);
                 for(String var: context.fileList()){
-                   if((fileName+".txt").equals(var)){return;}
+                    if((fileName+".txt").equals(var)){return;}
                 }
 
                 outputStreamWriter= new OutputStreamWriter(context.openFileOutput(fileName + ".txt", context.MODE_APPEND));
@@ -86,8 +86,8 @@ public class Dictionary extends InputMethodService {
                         }
 
                     }
-                            outputStreamWriter.write('\n');
-                            outputStreamWriter.flush();
+                    outputStreamWriter.write('\n');
+                    outputStreamWriter.flush();
                 }
                 outputStreamWriter.close();
                 reader.close();
@@ -152,7 +152,7 @@ public class Dictionary extends InputMethodService {
         } catch (IndexOutOfBoundsException e) {
             System.out.println("calculated distance : " + e);
         }
-         // check whether distance between two words are less than three
+        // check whether distance between two words are less than three
         return distance;
 
     }

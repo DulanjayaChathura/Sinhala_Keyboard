@@ -1,34 +1,70 @@
 package dictionary;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import android.content.Context;
+        import android.inputmethodservice.KeyboardView;
+        import android.support.test.InstrumentationRegistry;
+        import android.support.test.runner.AndroidJUnit4;
+        import android.util.Log;
 
-import java.util.ArrayList;
+        import org.junit.Before;
+        import org.junit.Test;
+        import org.junit.runner.RunWith;
 
-import static org.junit.Assert.*;
+        import java.io.BufferedReader;
+        import java.io.FileInputStream;
+        import java.io.FileNotFoundException;
+        import java.io.InputStream;
+        import java.io.InputStreamReader;
+        import java.lang.reflect.Array;
+        import java.util.ArrayList;
+        import org.junit.After;
+        import org.junit.Before;
 
+        import static org.junit.Assert.*;
+
+@RunWith(AndroidJUnit4.class)
 public class DictionaryTest {
-    Dictionary dictionary1=new Dictionary();
-    ArrayList<String> output;
+    Context context;
+    FileInputStream fileInputStream;
+    StringBuilder composing;
+    BufferedReader bufferedReader;
+    Dictionary dictionary;
+    InputStream inputStream;
+    String input="අකුණ";
 
-//    @Before
-//    public void setUp() throws Exception {
-//    }
-//
-//    @After
-//    public void tearDown() throws Exception {
-//    }
+    @Before
+    public void setUp() throws Exception {
+        context= InstrumentationRegistry.getTargetContext();
+        composing=new StringBuilder();
+        dictionary=new Dictionary();
+
+        String fileName=input.substring(0,1);
+
+        try{
+             inputStream = context.openFileInput(fileName + ".txt");
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            bufferedReader = new BufferedReader(inputStreamReader,20000);
+
+
+        }catch (FileNotFoundException e){
+
+        }
+    }
     @Test
-    public void calculateWordTest(){
-        String word = "ග";
-        String var="ගැලපීම ";
-        output=dictionary1.calculateWord(word);
+    public void useContext(){
 
+        assertEquals("com.example.myapplication",context.getPackageName());
 
-         System.out.println(output.toString());
-
+    }
+    @Test
+    public void testWordListGenerator(){
+        String[] expected={"අකුණ"};
+        ArrayList<String> output;
+        output=dictionary.getWordList(input,inputStream,context);
+        assertArrayEquals(expected,output.toArray());
 
 
     }
+
+
 }

@@ -48,7 +48,7 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
     private Keyboard currentKeyboard;
 
     /**keyboard  **/
-    
+
     private Candidate_view mCandidateView;
     private StringBuilder mComposing = new StringBuilder();
     private String wordSeparators;
@@ -122,7 +122,7 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
         setCandidatesViewShown(true);
         return mCandidateView;
     }
-    
+
     public void setSuggestions(List<String> suggestions, boolean completions,
                                boolean typedWordValid) {
         if (mCandidateView!= null) {
@@ -149,7 +149,7 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
 
         }
     }
-    
+
 
     @Override
     public void onPress(int primaryCode) {// over write method
@@ -188,7 +188,7 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
         // clear whatever candidate text we have.
         if (mComposing.length() > 0 && (newSelStart != candidatesEnd
                 || newSelEnd != candidatesEnd)) {
-     //       System.out.println("on update selection "+mComposing.length());
+            //       System.out.println("on update selection "+mComposing.length());
             mComposing.setLength(0);// when cursor moves we should set
 
 
@@ -211,7 +211,7 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
         StringBuilder currentWord = new StringBuilder("");// current word on which cursor is
         int beforeLength = 0;// distance to cursor position from the start of the text area
         try {
-        text = getCurrentInputConnection().getExtractedText(new ExtractedTextRequest(), 0);//  extract current text area
+            text = getCurrentInputConnection().getExtractedText(new ExtractedTextRequest(), 0);//  extract current text area
         }
         catch(NullPointerException e){System.out.println(e);return ;}
         if(text==null){typedWord="";return;}
@@ -266,7 +266,7 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
     }
     @Override
     public void onWindowHidden(){ // this method is called when home button is pressed
-          typedWord="";
+        typedWord="";
 
 
     }
@@ -320,7 +320,7 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
         return  suggestedList;
     }
     public boolean updateCandidates() {
-       String currentWord=typedWord;
+        String currentWord=typedWord;
 
         if(!(list==null)) {// other wise we cannot clear the Arraylist
             list.clear();// clear the entire word list
@@ -328,45 +328,45 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
         }
 
 
-                if(!currentWord.equals("")) {
-                }
-                if (currentWord.length() > 0 && !currentWord.equals("")) {
+        if(!currentWord.equals("")) {
+        }
+        if (currentWord.length() > 0 && !currentWord.equals("")) {
 
 
-                    suggestedList.clear();
+            suggestedList.clear();
 
-                    suggestedList=getWordListFromArticle(currentWord);
+            suggestedList=getWordListFromArticle(currentWord);
 
-                    if(!suggestedList.isEmpty()){
-                        if(!dictionary.isWordCorrect(currentWord) && currentWord.length()>1 ){
-                            wrongWord='"'+currentWord+'"';
-                            list.add(wrongWord);
-                        }else
-                        { list.add(currentWord);
-                        }if(suggestedList.contains(currentWord)) {
-                            suggestedList.remove(currentWord);
-
-                        }
-                        list.addAll(suggestedList);
-
-                        isSuggetionListEmplty=false;
-
-                    }else if(currentWord.length()>1){
-                        list.add('"'+currentWord+'"');
-                        isSuggetionListEmplty=true;
-
-                    }else{
-                        list.add(currentWord);
-                    }
-
-
-
-                    setSuggestions(list, true, true);
-
-                } else {
-                    setSuggestions(null, false, false);
+            if(!suggestedList.isEmpty()){
+                if(!dictionary.isWordCorrect(currentWord) && currentWord.length()>1 ){
+                    wrongWord='"'+currentWord+'"';
+                    list.add(wrongWord);
+                }else
+                { list.add(currentWord);
+                }if(suggestedList.contains(currentWord)) {
+                    suggestedList.remove(currentWord);
 
                 }
+                list.addAll(suggestedList);
+
+                isSuggetionListEmplty=false;
+
+            }else if(currentWord.length()>1){
+                list.add('"'+currentWord+'"');
+                isSuggetionListEmplty=true;
+
+            }else{
+                list.add(currentWord);
+            }
+
+
+
+            setSuggestions(list, true, true);
+
+        } else {
+            setSuggestions(null, false, false);
+
+        }
 
 
 
@@ -378,9 +378,9 @@ SinhalaKeyboard extends InputMethodService implements KeyboardView.OnKeyboardAct
         dictionary.writeNewWord(word);
 
     }
-    private void handleBackspace() {
+    public void handleBackspace() {
 
-            getCurrentInputConnection().deleteSurroundingText(1,0);// delete surrounding text
+        getCurrentInputConnection().deleteSurroundingText(1,0);// delete surrounding text
 
         if(position==0){return;}
         getCurrentDetails();
